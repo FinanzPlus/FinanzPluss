@@ -1,0 +1,107 @@
+/* ============================================
+   BANK LOGO COMPONENT - FINANZPLUS AUSTRIA
+   Logos professionnels des banques autrichiennes
+   ============================================ */
+
+.bank-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.bank-logo-svg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bank-logo-svg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Tailles */
+.bank-logo-small {
+  width: 40px;
+  height: 40px;
+}
+
+.bank-logo-medium {
+  width: 80px;
+  height: 80px;
+}
+
+.bank-logo-large {
+  width: 120px;
+  height: 120px;
+}
+
+.bank-logo-xlarge {
+  width: 160px;
+  height: 160px;
+}
+
+/* Variantes */
+.bank-logo-circle .bank-logo-svg svg rect {
+  rx: 50%;
+}
+
+.bank-logo-square .bank-logo-svg svg rect {
+  rx: 4px;
+}
+
+.bank-logo-minimal {
+  background: transparent;
+  border: 2px solid var(--bank-color, #0A1628);
+  border-radius: 8px;
+}
+
+.bank-logo-minimal .bank-logo-svg svg rect {
+  fill: transparent;
+}
+
+/* Effets hover */
+.bank-logo:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.bank-logo-default:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation de chargement */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.bank-logo.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bank-logo-large {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .bank-logo-xlarge {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Made with ❤️ by Bob for FinanzPlus Austria */
+
+/* Made with Bob */

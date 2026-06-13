@@ -1,0 +1,36 @@
+/* Rating Stars Component */
+.rating-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.rating-stars.small {
+  font-size: 14px;
+}
+
+.rating-stars.medium {
+  font-size: 20px;
+}
+
+.rating-stars.large {
+  font-size: 32px;
+}
+
+.star {
+  color: #ddd;
+  transition: color 0.2s ease;
+}
+
+.star.filled {
+  color: #FFD700;
+}
+
+.rating-stars.interactive .star {
+  cursor: pointer;
+}
+
+.rating-stars.interactive .star:hover {
+  transform: scale(1.1);
+}
+
+/* Made with Bob */

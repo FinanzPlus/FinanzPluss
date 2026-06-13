@@ -1,0 +1,877 @@
+/* ============================================
+   LOAN SIMULATOR - FINANZPLUS AUSTRIA
+   Design Premium en 3 Étapes
+   ============================================ */
+
+/* Hero Section */
+.simulator-hero {
+  background: linear-gradient(135deg, #0A1628 0%, #1a2d47 100%);
+  color: white;
+  padding: 80px 0 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.simulator-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="none"/><path d="M0 0L100 100M100 0L0 100" stroke="rgba(201,168,76,0.05)" stroke-width="1"/></svg>');
+  opacity: 0.3;
+}
+
+.simulator-hero h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #C9A84C;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Indicateur d'étapes */
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active .step-number {
+  background: #C9A84C;
+  border-color: #C9A84C;
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+}
+
+.step-indicator.completed .step-number {
+  background: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.step-indicator.completed .step-number::after {
+  content: '✓';
+  position: absolute;
+}
+
+.step-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active .step-label {
+  color: #C9A84C;
+  font-weight: 600;
+}
+
+.step-line {
+  width: 100px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 1rem;
+}
+
+/* Contenu principal */
+.simulator-content {
+  padding: 60px 0;
+  background: #F8F6F1;
+}
+
+.step-content {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.step-title {
+  font-size: 2rem;
+  color: #0A1628;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.step-description {
+  font-size: 1.125rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* Grille des banques - ÉTAPE 1 */
+.banks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.bank-card {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bank-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #C9A84C, #d4b55e);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.bank-card:hover {
+  border-color: #C9A84C;
+  box-shadow: 0 8px 30px rgba(201, 168, 76, 0.2);
+  transform: translateY(-4px);
+}
+
+.bank-card:hover::before {
+  transform: scaleX(1);
+}
+
+.bank-card.selected {
+  border-color: #C9A84C;
+  background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+  box-shadow: 0 8px 30px rgba(201, 168, 76, 0.3);
+}
+
+.bank-card.selected::before {
+  transform: scaleX(1);
+}
+
+.bank-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #C9A84C;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.bank-logo {
+  font-size: 4rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.bank-name {
+  font-size: 1.5rem;
+  color: #0A1628;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.bank-rate {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.rate-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.rate-value {
+  display: block;
+  font-size: 2rem;
+  color: #C9A84C;
+  font-weight: 700;
+}
+
+.bank-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.specialty-tag {
+  background: #f0f0f0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.bank-card.selected .specialty-tag {
+  background: #C9A84C;
+  color: white;
+}
+
+.bank-limits {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.limit-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.selected-indicator {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #C9A84C;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Grille simulateur - ÉTAPE 2 */
+.simulator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.simulator-form-card,
+.simulator-results-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.simulator-form-card h3,
+.simulator-results-card h3 {
+  font-size: 1.5rem;
+  color: #0A1628;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+/* Formulaire */
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: #0A1628;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.label-value {
+  color: #C9A84C;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.label-value.locked {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.range-input {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #C9A84C 0%, #C9A84C var(--value), #e0e0e0 var(--value), #e0e0e0 100%);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #C9A84C;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.4);
+  transition: all 0.2s ease;
+}
+
+.range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.6);
+}
+
+.range-input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #C9A84C;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.4);
+  transition: all 0.2s ease;
+}
+
+.range-input::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(201, 168, 76, 0.6);
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.select-input,
+.text-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.select-input:focus,
+.text-input:focus {
+  outline: none;
+  border-color: #C9A84C;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
+}
+
+.locked-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #fff8e1;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Résultats */
+.result-highlight {
+  background: linear-gradient(135deg, #0A1628 0%, #1a2d47 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.result-label {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.result-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #C9A84C;
+  margin-bottom: 0.5rem;
+}
+
+.result-note {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.result-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.result-icon {
+  font-size: 2rem;
+}
+
+.result-item-label {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.result-item-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0A1628;
+}
+
+/* Tableau d'amortissement */
+.amortization-section {
+  margin-top: 3rem;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.amortization-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.amortization-header h3 {
+  font-size: 1.5rem;
+  color: #0A1628;
+  font-weight: 700;
+  margin: 0;
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.amortization-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.amortization-table thead {
+  background: #0A1628;
+  color: white;
+}
+
+.amortization-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.amortization-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.875rem;
+}
+
+.amortization-table tbody tr:hover {
+  background: #fff8e1;
+}
+
+.amortization-table tbody tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+/* Étape 3 - Informations personnelles */
+.final-step-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.personal-info-card,
+.summary-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.personal-info-card h3,
+.summary-card h3 {
+  font-size: 1.5rem;
+  color: #0A1628;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.summary-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.summary-section h4 {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.summary-bank {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #C9A84C;
+}
+
+.bank-logo-small {
+  font-size: 2rem;
+}
+
+.bank-name-small {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0A1628;
+}
+
+.bank-rate-small {
+  font-size: 0.875rem;
+  color: #C9A84C;
+  font-weight: 600;
+}
+
+.summary-items {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row span:first-child {
+  color: #666;
+}
+
+.summary-row strong {
+  color: #0A1628;
+  font-weight: 600;
+}
+
+.summary-section.highlight {
+  background: linear-gradient(135deg, #0A1628 0%, #1a2d47 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: none;
+}
+
+.summary-section.highlight h4 {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+}
+
+.summary-monthly {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #C9A84C;
+  text-align: center;
+}
+
+/* Info boxes */
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #e3f2fd;
+  border-left: 4px solid #2196F3;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.info-box p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.whatsapp-info {
+  background: #e8f5e9;
+  border-left: 4px solid #4CAF50;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.whatsapp-info p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+.whatsapp-info strong {
+  color: #0A1628;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Boutons d'action */
+.step-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #C9A84C 0%, #d4b55e 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201, 168, 76, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background: white;
+  color: #0A1628;
+  border: 2px solid #0A1628;
+}
+
+.btn-outline:hover {
+  background: #0A1628;
+  color: white;
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.btn-lg {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.125rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .simulator-grid,
+  .final-step-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .simulator-hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .steps-indicator {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .step-line {
+    width: 2px;
+    height: 40px;
+    margin: 0;
+  }
+
+  .banks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step-content {
+    padding: 1.5rem;
+  }
+
+  .step-title {
+    font-size: 1.5rem;
+  }
+
+  .result-value {
+    font-size: 2rem;
+  }
+
+  .step-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .amortization-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+}
+
+@media (max-width: 480px) {
+  .simulator-hero {
+    padding: 40px 0 30px;
+  }
+
+  .simulator-hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .bank-logo {
+    font-size: 3rem;
+  }
+
+  .bank-name {
+    font-size: 1.25rem;
+  }
+
+  .rate-value {
+    font-size: 1.5rem;
+  }
+}
+
+/* Made with ❤️ by Bob for FinanzPlus Austria */
+
+/* Made with Bob */
