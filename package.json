@@ -1,0 +1,45 @@
+{
+  "name": "finanzplus-austria",
+  "version": "1.0.0",
+  "description": "FinanzPlus Austria - Plateforme de comparaison et simulation de crédits",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:frontend && npm run install:backend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:frontend",
+    "start:frontend": "cd frontend && npm run preview",
+    "start:backend": "cd backend && npm start",
+    "start": "npm run start:frontend",
+    "deploy:frontend": "cd frontend && npm install && npm run build",
+    "deploy:backend": "cd backend && npm install",
+    "deploy": "npm run deploy:frontend && npm run deploy:backend"
+  },
+  "keywords": [
+    "finanzplus",
+    "austria",
+    "kredit",
+    "loan",
+    "simulator",
+    "comparator",
+    "banking"
+  ],
+  "author": "FinanzPlus Austria",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finanzplus/finanzplus-austria"
+  }
+}
