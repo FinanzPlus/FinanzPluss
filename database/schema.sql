@@ -1,5 +1,5 @@
 -- FinanzPlus Austria Database Schema
--- PostgreSQL Database
+-- PostgreSQL Database - 100% Financial Services Platform
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -12,7 +12,12 @@ CREATE TABLE users (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
-    role VARCHAR(20) DEFAULT 'customer' CHECK (role IN ('customer', 'admin')),
+    date_of_birth DATE,
+    address TEXT,
+    city VARCHAR(100),
+    postal_code VARCHAR(10),
+    country VARCHAR(100) DEFAULT 'Österreich',
+    role VARCHAR(20) DEFAULT 'customer' CHECK (role IN ('customer', 'admin', 'advisor')),
     email_verified BOOLEAN DEFAULT FALSE,
     verification_token VARCHAR(255),
     reset_password_token VARCHAR(255),
@@ -22,86 +27,25 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Products Table (Base table for all products)
-CREATE TABLE products (
+-- Bank Partners Table
+CREATE TABLE bank_partners (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
+    logo_url VARCHAR(500),
     description TEXT,
-    category VARCHAR(50) NOT NULL CHECK (category IN ('car', 'furniture')),
-    price DECIMAL(10, 2) NOT NULL,
-    discount_percentage DECIMAL(5, 2) DEFAULT 0,
-    stock_quantity INTEGER DEFAULT 0,
+    website_url VARCHAR(500),
+    contact_email VARCHAR(255),
+    contact_phone VARCHAR(20),
+    base_interest_rate DECIMAL(5, 2) NOT NULL DEFAULT 2.50,
+    min_loan_amount DECIMAL(10, 2) DEFAULT 1000,
+    max_loan_amount DECIMAL(10, 2) DEFAULT 500000,
+    min_duration_months INTEGER DEFAULT 12,
+    max_duration_months INTEGER DEFAULT 360,
+    specialties TEXT[],
     is_featured BOOLEAN DEFAULT FALSE,
-    is_new BOOLEAN DEFAULT FALSE,
-    is_popular BOOLEAN DEFAULT FALSE,
-    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'sold', 'reserved')),
-    views_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Product Images Table
-CREATE TABLE product_images (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    image_url VARCHAR(500) NOT NULL,
-    is_primary BOOLEAN DEFAULT FALSE,
-    display_order INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Cars Table (Extends products)
-CREATE TABLE cars (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID UNIQUE REFERENCES products(id) ON DELETE CASCADE,
-    brand VARCHAR(100) NOT NULL,
-    model VARCHAR(100) NOT NULL,
-    year INTEGER NOT NULL,
-    mileage INTEGER NOT NULL,
-    fuel_type VARCHAR(50) CHECK (fuel_type IN ('Benzin', 'Diesel', 'Elektro', 'Hybrid', 'Gas')),
-    transmission VARCHAR(50) CHECK (transmission IN ('Manuell', 'Automatik')),
-    color VARCHAR(50),
-    doors INTEGER,
-    seats INTEGER,
-    engine_capacity VARCHAR(50),
-    power_hp INTEGER,
-    vin VARCHAR(17),
-    first_registration DATE,
-    previous_owners INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Furniture Table (Extends products)
-CREATE TABLE furniture (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID UNIQUE REFERENCES products(id) ON DELETE CASCADE,
-    furniture_type VARCHAR(100) NOT NULL,
-    material VARCHAR(100),
-    color VARCHAR(50),
-    dimensions_length DECIMAL(10, 2),
-    dimensions_width DECIMAL(10, 2),
-    dimensions_height DECIMAL(10, 2),
-    weight DECIMAL(10, 2),
-    style VARCHAR(50),
-    room_type VARCHAR(50),
-    assembly_required BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Financial Offers Table
-CREATE TABLE financial_offers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    interest_rate DECIMAL(5, 2) NOT NULL DEFAULT 3.00,
-    min_amount DECIMAL(10, 2) NOT NULL,
-    max_amount DECIMAL(10, 2) NOT NULL,
-    min_duration_months INTEGER NOT NULL,
-    max_duration_months INTEGER NOT NULL,
-    bank_partner VARCHAR(255),
-    bank_logo_url VARCHAR(500),
     is_active BOOLEAN DEFAULT TRUE,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -110,64 +54,56 @@ CREATE TABLE financial_offers (
 CREATE TABLE loan_requests (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE SET NULL,
+    bank_partner_id UUID REFERENCES bank_partners(id) ON DELETE SET NULL,
+    loan_type VARCHAR(50) NOT NULL CHECK (loan_type IN ('personal', 'mortgage', 'car', 'business', 'renovation', 'education')),
     amount DECIMAL(10, 2) NOT NULL,
     duration_months INTEGER NOT NULL,
     monthly_payment DECIMAL(10, 2) NOT NULL,
-    interest_rate DECIMAL(5, 2) NOT NULL DEFAULT 3.00,
+    interest_rate DECIMAL(5, 2) NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'completed')),
-    notes TEXT,
+    total_interest DECIMAL(10, 2) NOT NULL,
+    purpose TEXT,
+    employment_status VARCHAR(50),
+    monthly_income DECIMAL(10, 2),
+    existing_loans BOOLEAN DEFAULT FALSE,
+    existing_loans_amount DECIMAL(10, 2),
+    status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'in_review', 'approved', 'rejected', 'completed', 'cancelled')),
+    admin_notes TEXT,
+    rejection_reason TEXT,
+    approved_at TIMESTAMP,
+    approved_by UUID REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Orders Table
-CREATE TABLE orders (
+-- Loan Simulations Table (for saved simulations)
+CREATE TABLE loan_simulations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_number VARCHAR(50) UNIQUE NOT NULL,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    bank_partner_id UUID REFERENCES bank_partners(id) ON DELETE SET NULL,
+    loan_type VARCHAR(50) NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    duration_months INTEGER NOT NULL,
+    interest_rate DECIMAL(5, 2) NOT NULL,
+    monthly_payment DECIMAL(10, 2) NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
-    discount_amount DECIMAL(10, 2) DEFAULT 0,
-    final_amount DECIMAL(10, 2) NOT NULL,
-    payment_method VARCHAR(50) CHECK (payment_method IN ('stripe', 'paypal', 'financing', 'cash')),
-    payment_status VARCHAR(50) DEFAULT 'pending' CHECK (payment_status IN ('pending', 'paid', 'failed', 'refunded')),
-    order_status VARCHAR(50) DEFAULT 'pending' CHECK (order_status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
-    shipping_address TEXT,
-    billing_address TEXT,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Order Items Table
-CREATE TABLE order_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE SET NULL,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    unit_price DECIMAL(10, 2) NOT NULL,
-    total_price DECIMAL(10, 2) NOT NULL,
+    simulation_data JSONB,
+    is_favorite BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Favorites Table
-CREATE TABLE favorites (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, product_id)
-);
-
--- Comments/Reviews Table
+-- Comments/Reviews Table (for platform reviews)
 CREATE TABLE comments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    bank_partner_id UUID REFERENCES bank_partners(id) ON DELETE CASCADE,
     rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    title VARCHAR(255),
     comment TEXT NOT NULL,
+    loan_type VARCHAR(50),
+    loan_amount DECIMAL(10, 2),
     status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    is_verified BOOLEAN DEFAULT FALSE,
     likes_count INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -189,6 +125,7 @@ CREATE TABLE opening_hours (
     opening_time TIME,
     closing_time TIME,
     is_closed BOOLEAN DEFAULT FALSE,
+    special_note VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(day_of_week)
@@ -197,43 +134,83 @@ CREATE TABLE opening_hours (
 -- Contact Messages Table
 CREATE TABLE contact_messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
-    subject VARCHAR(255),
+    subject VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
-    status VARCHAR(20) DEFAULT 'new' CHECK (status IN ('new', 'read', 'replied', 'archived')),
+    inquiry_type VARCHAR(50) CHECK (inquiry_type IN ('general', 'loan_inquiry', 'complaint', 'partnership', 'other')),
+    status VARCHAR(20) DEFAULT 'new' CHECK (status IN ('new', 'read', 'in_progress', 'replied', 'archived')),
+    assigned_to UUID REFERENCES users(id) ON DELETE SET NULL,
+    admin_notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Promotions Table
-CREATE TABLE promotions (
+-- Appointments Table
+CREATE TABLE appointments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    code VARCHAR(50) UNIQUE NOT NULL,
-    description TEXT,
-    discount_type VARCHAR(20) CHECK (discount_type IN ('percentage', 'fixed')),
-    discount_value DECIMAL(10, 2) NOT NULL,
-    min_purchase_amount DECIMAL(10, 2) DEFAULT 0,
-    max_uses INTEGER,
-    current_uses INTEGER DEFAULT 0,
-    valid_from TIMESTAMP NOT NULL,
-    valid_until TIMESTAMP NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    advisor_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    appointment_type VARCHAR(50) NOT NULL CHECK (appointment_type IN ('consultation', 'loan_review', 'document_review', 'follow_up')),
+    appointment_date DATE NOT NULL,
+    appointment_time TIME NOT NULL,
+    duration_minutes INTEGER DEFAULT 60,
+    location VARCHAR(255),
+    is_online BOOLEAN DEFAULT FALSE,
+    meeting_link VARCHAR(500),
+    notes TEXT,
+    status VARCHAR(50) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'completed', 'cancelled', 'no_show')),
+    cancellation_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Documents Table (for loan application documents)
+CREATE TABLE documents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    loan_request_id UUID REFERENCES loan_requests(id) ON DELETE CASCADE,
+    document_type VARCHAR(50) NOT NULL CHECK (document_type IN ('id_card', 'income_proof', 'bank_statement', 'tax_return', 'employment_contract', 'other')),
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size INTEGER,
+    mime_type VARCHAR(100),
+    is_verified BOOLEAN DEFAULT FALSE,
+    verified_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    verified_at TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Newsletter Subscribers Table
 CREATE TABLE newsletter_subscribers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    interests TEXT[],
     is_active BOOLEAN DEFAULT TRUE,
     subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    unsubscribed_at TIMESTAMP
+    unsubscribed_at TIMESTAMP,
+    unsubscribe_reason TEXT
 );
 
--- Activity Logs Table (for admin dashboard)
+-- FAQ Table
+CREATE TABLE faqs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    category VARCHAR(100) NOT NULL,
+    question TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    display_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    views_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Activity Logs Table (for admin dashboard and audit)
 CREATE TABLE activity_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -246,32 +223,52 @@ CREATE TABLE activity_logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Cart Table (for persistent carts)
-CREATE TABLE cart_items (
+-- Notifications Table
+CREATE TABLE notifications (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, product_id)
+    type VARCHAR(50) NOT NULL CHECK (type IN ('loan_status', 'appointment', 'document', 'message', 'system')),
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    link VARCHAR(500),
+    is_read BOOLEAN DEFAULT FALSE,
+    read_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Credit Score Records Table
+CREATE TABLE credit_score_records (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    score INTEGER CHECK (score >= 300 AND score <= 850),
+    provider VARCHAR(100),
+    report_date DATE NOT NULL,
+    factors JSONB,
+    recommendations TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes for better performance
-CREATE INDEX idx_products_category ON products(category);
-CREATE INDEX idx_products_status ON products(status);
-CREATE INDEX idx_products_slug ON products(slug);
-CREATE INDEX idx_cars_brand ON cars(brand);
-CREATE INDEX idx_cars_year ON cars(year);
-CREATE INDEX idx_furniture_type ON furniture(furniture_type);
-CREATE INDEX idx_orders_user_id ON orders(user_id);
-CREATE INDEX idx_orders_status ON orders(order_status);
-CREATE INDEX idx_comments_product_id ON comments(product_id);
-CREATE INDEX idx_comments_status ON comments(status);
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_bank_partners_slug ON bank_partners(slug);
+CREATE INDEX idx_bank_partners_active ON bank_partners(is_active);
 CREATE INDEX idx_loan_requests_user_id ON loan_requests(user_id);
+CREATE INDEX idx_loan_requests_status ON loan_requests(status);
+CREATE INDEX idx_loan_requests_bank_partner ON loan_requests(bank_partner_id);
+CREATE INDEX idx_loan_simulations_user_id ON loan_simulations(user_id);
+CREATE INDEX idx_comments_bank_partner_id ON comments(bank_partner_id);
+CREATE INDEX idx_comments_status ON comments(status);
+CREATE INDEX idx_contact_messages_status ON contact_messages(status);
+CREATE INDEX idx_appointments_user_id ON appointments(user_id);
+CREATE INDEX idx_appointments_date ON appointments(appointment_date);
+CREATE INDEX idx_appointments_status ON appointments(status);
+CREATE INDEX idx_documents_user_id ON documents(user_id);
+CREATE INDEX idx_documents_loan_request ON documents(loan_request_id);
 CREATE INDEX idx_activity_logs_user_id ON activity_logs(user_id);
 CREATE INDEX idx_activity_logs_created_at ON activity_logs(created_at);
+CREATE INDEX idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX idx_notifications_read ON notifications(is_read);
 
 -- Triggers for updated_at timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -285,28 +282,43 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_financial_offers_updated_at BEFORE UPDATE ON financial_offers
+CREATE TRIGGER update_bank_partners_updated_at BEFORE UPDATE ON bank_partners
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_loan_requests_updated_at BEFORE UPDATE ON loan_requests
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_opening_hours_updated_at BEFORE UPDATE ON opening_hours
+CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_promotions_updated_at BEFORE UPDATE ON promotions
+CREATE TRIGGER update_opening_hours_updated_at BEFORE UPDATE ON opening_hours
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_contact_messages_updated_at BEFORE UPDATE ON contact_messages
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Made with Bob
+CREATE TRIGGER update_appointments_updated_at BEFORE UPDATE ON appointments
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_faqs_updated_at BEFORE UPDATE ON faqs
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Insert default opening hours
+INSERT INTO opening_hours (day_of_week, opening_time, closing_time, is_closed) VALUES
+(0, NULL, NULL, TRUE), -- Sunday - Closed
+(1, '09:00', '18:00', FALSE), -- Monday
+(2, '09:00', '18:00', FALSE), -- Tuesday
+(3, '09:00', '18:00', FALSE), -- Wednesday
+(4, '09:00', '18:00', FALSE), -- Thursday
+(5, '09:00', '17:00', FALSE), -- Friday
+(6, NULL, NULL, TRUE); -- Saturday - Closed
+
+-- Insert default Austrian bank partners
+INSERT INTO bank_partners (name, slug, description, base_interest_rate, min_loan_amount, max_loan_amount, specialties, is_featured, display_order) VALUES
+('Erste Bank', 'erste-bank', 'Österreichs größte Bank mit über 200 Jahren Erfahrung in der Finanzierung', 2.50, 5000, 500000, ARRAY['Immobilienfinanzierung', 'Wohnbaukredit', 'Umschuldung'], TRUE, 1),
+('Raiffeisen Bank', 'raiffeisen-bank', 'Führende Genossenschaftsbank mit individuellen Finanzlösungen', 2.80, 3000, 400000, ARRAY['Unternehmenskredite', 'Landwirtschaft', 'KMU-Finanzierung'], TRUE, 2),
+('Bank Austria', 'bank-austria', 'Teil der UniCredit Gruppe mit internationaler Expertise', 2.65, 5000, 600000, ARRAY['Privatkredit', 'Autokredit', 'Renovierungskredit'], TRUE, 3),
+('BAWAG P.S.K.', 'bawag-psk', 'Österreichische Universalbank mit günstigen Konditionen', 2.45, 2000, 300000, ARRAY['Schnellkredit', 'Konsumkredit', 'Umschuldung'], TRUE, 4),
+('Volksbank', 'volksbank', 'Regionale Bank mit persönlicher Beratung', 2.90, 3000, 250000, ARRAY['Regionalförderung', 'Kleinkredit', 'Privatkredit'], TRUE, 5);
+
+-- Made with Bob - FinanzPlus Austria 100% Financial Platform
