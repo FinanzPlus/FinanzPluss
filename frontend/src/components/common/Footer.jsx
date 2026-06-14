@@ -102,8 +102,8 @@ const Footer = () => {
                 <span className="contact-icon">✉️</span>
                 <div className="contact-info">
                   <span className="contact-label">E-Mail</span>
-                  <a href="mailto:info@finanzplus.at" className="contact-value">
-                    info@finanzplus.at
+                  <a href="mailto:Kontakt_finanzplusaustria@proton.me" className="contact-value">
+                    Kontakt_finanzplusaustria@proton.me
                   </a>
                 </div>
               </div>

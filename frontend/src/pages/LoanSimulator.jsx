@@ -259,7 +259,7 @@ const LoanSimulator = () => {
         
         <div class="footer">
           <p><strong>FinanzPlus Austria GmbH</strong></p>
-          <p>Stephansplatz 1, 1010 Wien | Tel: +49 155 65236794 | Email: info@finanzplus.at</p>
+          <p>Stephansplatz 1, 1010 Wien | Tel: +49 155 65236794 | Email: Kontakt_finanzplusaustria@proton.me</p>
           <p>Erstellt am: ${new Date().toLocaleDateString('de-AT', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           <p style="margin-top: 10px; font-style: italic;">Dies ist eine unverbindliche Berechnung. Die tatsächlichen Konditionen können abweichen.</p>
         </div>

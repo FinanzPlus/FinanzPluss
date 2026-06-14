@@ -161,13 +161,13 @@ const Contact = () => {
                       rel="noopener noreferrer"
                       className="whatsapp-link"
                     >
-                      +44 745 126 7912
+                      +49 155 65236794
                     </a>
                   </p>
                 </div>
                 <div className="detail-item">
                   <strong>E-Mail:</strong>
-                  <p><a href="mailto:info@finanzplus.at">info@finanzplus.at</a></p>
+                  <p><a href="mailto:Kontakt_finanzplusaustria@proton.me">Kontakt_finanzplusaustria@proton.me</a></p>
                 </div>
               </div>
             </div>

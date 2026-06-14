@@ -114,7 +114,7 @@ const AGB = () => {
                     Gewerbeberechtigung: Vermögensberatung<br />
                     <br />
                     Telefon: +49 155 65236794<br />
-                    E-Mail: info@finanzplus.at<br />
+                    E-Mail: Kontakt_finanzplusaustria@proton.me<br />
                     Website: www.finanzplus.at
                   </div>
                 </div>
@@ -496,7 +496,7 @@ const AGB = () => {
                   <p><strong>Gültig ab:</strong> 1. Januar 2026</p>
                   <p>
                     <strong>Frühere Versionen:</strong> Auf Anfrage erhältlich unter{' '}
-                    <a href="mailto:info@finanzplus.at" className="legal-link">info@finanzplus.at</a>
+                    <a href="mailto:Kontakt_finanzplusaustria@proton.me" className="legal-link">Kontakt_finanzplusaustria@proton.me</a>
                   </p>
                 </div>
               </div>
