@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BankLogo from '../components/common/BankLogo';
+import FinancialDisclaimer from '../components/common/FinancialDisclaimer';
 import { compareOffers, formatCurrency } from '../services/loanService';
 import './LoanComparator.css';
 
@@ -196,6 +197,9 @@ const LoanComparator = () => {
           </div>
         </div>
       </section>
+      {/* Avertissement financier obligatoire */}
+      <FinancialDisclaimer variant="compact" />
+
 
       {/* Résultats de comparaison */}
       <section className="comparison-results-section">

@@ -5,6 +5,9 @@ import { AuthProvider } from '@/context/AuthContext';
 // Layouts
 import MainLayout from '@/components/common/MainLayout';
 
+// Composants de sécurité et légaux
+import CookieBanner from '@/components/common/CookieBanner';
+
 // Pages publiques
 import Home from '@/pages/Home';
 import Login from '@/pages/Login';
@@ -76,6 +79,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
+        <CookieBanner />
       </Router>
     </AuthProvider>
   );

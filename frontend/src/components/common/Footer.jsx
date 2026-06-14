@@ -161,6 +161,14 @@ const Footer = () => {
             <Link to="/agb">AGB</Link>
             <span className="legal-separator">|</span>
             <Link to="/cookies">Cookie-Richtlinie</Link>
+            <span className="legal-separator">|</span>
+            <button
+              onClick={() => window.openCookieSettings && window.openCookieSettings()}
+              className="cookie-settings-btn"
+              aria-label="Cookie-Einstellungen öffnen"
+            >
+              🍪 Cookie-Einstellungen
+            </button>
           </div>
           <div className="footer-copyright">
             <p>

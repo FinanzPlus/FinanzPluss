@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import SSLBadge from './SSLBadge';
 import './Header.css';
 
 const Header = () => {
@@ -45,6 +46,9 @@ const Header = () => {
             <span className="logo-tagline">Austria</span>
           </div>
         </Link>
+
+        {/* SSL Badge */}
+        <SSLBadge />
 
         {/* Navigation Desktop */}
         <nav className="header-nav desktop-nav">

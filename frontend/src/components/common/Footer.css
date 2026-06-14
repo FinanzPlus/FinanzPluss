@@ -358,6 +358,32 @@
   opacity: 0.5;
 }
 
+/* Bouton Cookie Settings */
+.cookie-settings-btn {
+  background: none;
+  border: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  padding: 0;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.cookie-settings-btn:hover {
+  color: var(--color-gold);
+  text-decoration: underline;
+}
+
+.cookie-settings-btn:focus {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-sm);
+}
+
 .footer-copyright {
   text-align: center;
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import FinancialDisclaimer from '../components/common/FinancialDisclaimer';
 import './LoanSimulator.css';
 
 const LoanSimulator = () => {
@@ -346,6 +347,9 @@ const LoanSimulator = () => {
             </div>
           </div>
         </div>
+      
+      {/* Avertissement financier obligatoire */}
+      <FinancialDisclaimer />
       </section>
 
       {/* Contenu principal */}
