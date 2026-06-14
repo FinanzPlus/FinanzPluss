@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/utils/constants';
+import useRecaptcha from '@/hooks/useRecaptcha';
+import RecaptchaBadge from '@/components/common/RecaptchaBadge';
 import './Auth.css';
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { executeRecaptcha, isReady, error: recaptchaError } = useRecaptcha('register');
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -80,12 +83,23 @@ const Register = () => {
     setMessage({ type: '', text: '' });
 
     try {
+      // Générer le token reCAPTCHA
+      const recaptchaToken = await executeRecaptcha();
+      
+      if (!recaptchaToken) {
+        setMessage({ type: 'error', text: 'reCAPTCHA-Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.' });
+        setLoading(false);
+        return;
+      }
+
+      // Inscription avec token reCAPTCHA
       const result = await register({
         email: formData.email,
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: formData.phone
+        phone: formData.phone,
+        recaptchaToken
       });
       
       if (result.success) {
@@ -207,10 +221,16 @@ const Register = () => {
                 {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
               </div>
 
-              <button 
-                type="submit" 
+              {/* Badge reCAPTCHA */}
+              <RecaptchaBadge
+                isReady={isReady}
+                error={recaptchaError}
+              />
+
+              <button
+                type="submit"
                 className="btn btn-primary btn-block"
-                disabled={loading}
+                disabled={loading || !isReady}
               >
                 {loading ? 'Registrierung läuft...' : 'Konto erstellen'}
               </button>

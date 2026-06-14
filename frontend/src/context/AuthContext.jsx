@@ -52,7 +52,10 @@ export const AuthProvider = ({ children }) => {
    */
   const register = async (userData) => {
     try {
-      const result = await authService.register(userData);
+      // Extraire le token reCAPTCHA des données utilisateur
+      const { recaptchaToken, ...userDataWithoutToken } = userData;
+      
+      const result = await authService.register(userDataWithoutToken, recaptchaToken);
       
       if (result.success) {
         setUser(result.user);

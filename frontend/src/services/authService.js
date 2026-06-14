@@ -8,9 +8,15 @@ class AuthService {
   /**
    * Inscription d'un nouvel utilisateur
    */
-  async register(userData) {
+  async register(userData, recaptchaToken = null) {
     try {
-      const response = await api.post('/auth/register', userData);
+      const config = recaptchaToken ? {
+        headers: {
+          'X-Recaptcha-Token': recaptchaToken
+        }
+      } : {};
+
+      const response = await api.post('/auth/register', userData, config);
       
       if (response.data.success) {
         const { user, accessToken, refreshToken } = response.data.data;
