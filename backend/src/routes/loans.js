@@ -42,6 +42,13 @@ router.post(
  */
 router.post('/send-confirmation', loanController.sendConfirmation);
 
+/**
+ * @route   POST /api/loans/test-email
+ * @desc    Teste l'envoi d'email via Resend (diagnostic)
+ * @access  Public
+ */
+router.post('/test-email', loanController.testEmail);
+
 module.exports = router;
 
 // Made with ❤️ by Bob for FinanzPlus Austria
