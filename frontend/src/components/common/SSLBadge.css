@@ -1,0 +1,88 @@
+/* SSL Badge - Design Premium */
+
+.ssl-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ssl-badge:hover {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.08) 100%);
+  border-color: rgba(76, 175, 80, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+.ssl-icon {
+  width: 24px;
+  height: 24px;
+  color: #4caf50;
+  animation: pulse 2s infinite;
+}
+
+.ssl-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.ssl-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4caf50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ssl-subtitle {
+  font-size: 0.65rem;
+  color: rgba(76, 175, 80, 0.8);
+  font-weight: 500;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ssl-badge {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .ssl-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ssl-title {
+    font-size: 0.7rem;
+  }
+
+  .ssl-subtitle {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ssl-text {
+    display: none;
+  }
+
+  .ssl-badge {
+    padding: 0.5rem;
+  }
+}
+
+/* Made with Bob */

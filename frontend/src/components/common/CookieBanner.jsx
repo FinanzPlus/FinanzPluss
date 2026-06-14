@@ -1,206 +1,251 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './CookieBanner.css';
 
 const CookieBanner = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState({
-    necessary: true,
-    functional: false,
+    essential: true, // Toujours actif
     analytics: false,
     marketing: false
   });
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookieConsent');
-    if (!consent) {
-      setIsVisible(true);
+    // Vérifier si l'utilisateur a déjà fait un choix
+    const cookieConsent = localStorage.getItem('cookieConsent');
+    if (!cookieConsent) {
+      // Attendre 1 seconde avant d'afficher le bandeau
+      setTimeout(() => setShowBanner(true), 1000);
+    } else {
+      // Charger les préférences sauvegardées
+      const savedPreferences = JSON.parse(cookieConsent);
+      setPreferences(savedPreferences);
     }
   }, []);
 
-  const handleAcceptAll = () => {
+  const savePreferences = (prefs) => {
+    localStorage.setItem('cookieConsent', JSON.stringify(prefs));
+    localStorage.setItem('cookieConsentDate', new Date().toISOString());
+    setPreferences(prefs);
+    setShowBanner(false);
+    setShowSettings(false);
+    
+    // Appliquer les préférences
+    applyPreferences(prefs);
+  };
+
+  const applyPreferences = (prefs) => {
+    // Désactiver les cookies analytiques si refusés
+    if (!prefs.analytics) {
+      // Supprimer les cookies Google Analytics si présents
+      document.cookie.split(";").forEach((c) => {
+        if (c.trim().startsWith('_ga') || c.trim().startsWith('_gid')) {
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        }
+      });
+    }
+    
+    // Désactiver les cookies marketing si refusés
+    if (!prefs.marketing) {
+      // Supprimer les cookies marketing si présents
+      document.cookie.split(";").forEach((c) => {
+        if (c.trim().startsWith('_fbp') || c.trim().startsWith('_gcl')) {
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        }
+      });
+    }
+  };
+
+  const acceptAll = () => {
     const allAccepted = {
-      necessary: true,
-      functional: true,
+      essential: true,
       analytics: true,
-      marketing: true,
-      timestamp: new Date().toISOString()
+      marketing: true
     };
-    localStorage.setItem('cookieConsent', JSON.stringify(allAccepted));
-    setIsVisible(false);
+    savePreferences(allAccepted);
   };
 
-  const handleRejectAll = () => {
-    const onlyNecessary = {
-      necessary: true,
-      functional: false,
+  const rejectAll = () => {
+    const onlyEssential = {
+      essential: true,
       analytics: false,
-      marketing: false,
-      timestamp: new Date().toISOString()
+      marketing: false
     };
-    localStorage.setItem('cookieConsent', JSON.stringify(onlyNecessary));
-    setIsVisible(false);
+    savePreferences(onlyEssential);
   };
 
-  const handleSavePreferences = () => {
-    const consent = {
-      ...preferences,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem('cookieConsent', JSON.stringify(consent));
-    setIsVisible(false);
+  const saveCustom = () => {
+    savePreferences(preferences);
   };
 
-  const handlePreferenceChange = (key) => {
-    if (key === 'necessary') return; // Necessary cookies cannot be disabled
+  const handleToggle = (category) => {
+    if (category === 'essential') return; // Ne peut pas être désactivé
     setPreferences(prev => ({
       ...prev,
-      [key]: !prev[key]
+      [category]: !prev[category]
     }));
   };
 
-  if (!isVisible) return null;
+  // Fonction pour rouvrir les paramètres (appelée depuis le footer)
+  useEffect(() => {
+    window.openCookieSettings = () => {
+      const savedPreferences = localStorage.getItem('cookieConsent');
+      if (savedPreferences) {
+        setPreferences(JSON.parse(savedPreferences));
+      }
+      setShowBanner(true);
+      setShowSettings(true);
+    };
+  }, []);
+
+  if (!showBanner) return null;
 
   return (
-    <div className="cookie-banner-overlay">
-      <div className="cookie-banner">
-        <div className="cookie-header">
-          <div className="cookie-icon">
-            <i className="fas fa-cookie-bite"></i>
-          </div>
-          <h3>Cookie-Einstellungen</h3>
-        </div>
-
-        {!showSettings ? (
-          <>
-            <div className="cookie-content">
-              <p>
-                Wir verwenden Cookies, um Ihnen die bestmögliche Erfahrung auf unserer Website zu bieten. 
-                Einige Cookies sind notwendig für den Betrieb der Website, während andere uns helfen, 
-                die Website und Ihre Erfahrung zu verbessern.
+    <>
+      <div className="cookie-banner-overlay" onClick={() => !showSettings && setShowBanner(false)} />
+      <div className={`cookie-banner ${showSettings ? 'cookie-banner-expanded' : ''}`}>
+        <div className="cookie-banner-content">
+          {!showSettings ? (
+            <>
+              {/* Vue simple */}
+              <div className="cookie-banner-header">
+                <span className="cookie-icon">🍪</span>
+                <h3>Wir verwenden Cookies</h3>
+              </div>
+              
+              <p className="cookie-banner-text">
+                Wir verwenden Cookies und ähnliche Technologien, um Ihnen die beste Erfahrung auf unserer Website zu bieten. 
+                Einige Cookies sind für den Betrieb der Website unerlässlich, während andere uns helfen, die Website zu verbessern 
+                und Ihnen personalisierte Inhalte anzubieten.
               </p>
-              <p>
-                Durch Klicken auf "Alle akzeptieren" stimmen Sie der Verwendung aller Cookies zu. 
-                Sie können Ihre Einstellungen jederzeit in den Cookie-Einstellungen ändern.
+
+              <div className="cookie-banner-actions">
+                <button onClick={acceptAll} className="cookie-btn cookie-btn-accept">
+                  Alle akzeptieren
+                </button>
+                <button onClick={rejectAll} className="cookie-btn cookie-btn-reject">
+                  Alle ablehnen
+                </button>
+                <button onClick={() => setShowSettings(true)} className="cookie-btn cookie-btn-settings">
+                  Einstellungen
+                </button>
+              </div>
+
+              <div className="cookie-banner-footer">
+                <Link to="/datenschutz" className="cookie-link">
+                  Datenschutzerklärung
+                </Link>
+                <span className="cookie-separator">•</span>
+                <Link to="/impressum" className="cookie-link">
+                  Impressum
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Vue détaillée avec paramètres */}
+              <div className="cookie-settings-header">
+                <h3>Cookie-Einstellungen</h3>
+                <button onClick={() => setShowSettings(false)} className="cookie-close">
+                  ✕
+                </button>
+              </div>
+
+              <p className="cookie-settings-intro">
+                Wir respektieren Ihre Privatsphäre. Wählen Sie, welche Cookies Sie zulassen möchten:
               </p>
-            </div>
 
-            <div className="cookie-actions">
-              <button onClick={() => setShowSettings(true)} className="btn btn-outline">
-                <i className="fas fa-cog"></i>
-                Einstellungen
-              </button>
-              <button onClick={handleRejectAll} className="btn btn-secondary">
-                Nur notwendige
-              </button>
-              <button onClick={handleAcceptAll} className="btn btn-primary">
-                <i className="fas fa-check"></i>
-                Alle akzeptieren
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="cookie-settings">
-              <div className="cookie-category">
-                <div className="category-header">
-                  <div className="category-info">
-                    <h4>
-                      <i className="fas fa-shield-alt"></i>
-                      Notwendige Cookies
-                    </h4>
-                    <p>Diese Cookies sind für den Betrieb der Website erforderlich und können nicht deaktiviert werden.</p>
+              <div className="cookie-categories">
+                {/* Cookies essentiels */}
+                <div className="cookie-category">
+                  <div className="cookie-category-header">
+                    <div className="cookie-category-info">
+                      <h4>Notwendige Cookies</h4>
+                      <span className="cookie-badge cookie-badge-required">Immer aktiv</span>
+                    </div>
+                    <label className="cookie-toggle">
+                      <input
+                        type="checkbox"
+                        checked={preferences.essential}
+                        disabled
+                      />
+                      <span className="cookie-toggle-slider"></span>
+                    </label>
                   </div>
-                  <label className="toggle-switch disabled">
-                    <input type="checkbox" checked disabled />
-                    <span className="toggle-slider"></span>
-                  </label>
+                  <p className="cookie-category-description">
+                    Diese Cookies sind für den Betrieb der Website unerlässlich und können nicht deaktiviert werden. 
+                    Sie speichern Ihre Cookie-Präferenzen und ermöglichen grundlegende Funktionen wie Seitennavigation.
+                  </p>
+                </div>
+
+                {/* Cookies analytiques */}
+                <div className="cookie-category">
+                  <div className="cookie-category-header">
+                    <div className="cookie-category-info">
+                      <h4>Analytische Cookies</h4>
+                      <span className="cookie-badge">Optional</span>
+                    </div>
+                    <label className="cookie-toggle">
+                      <input
+                        type="checkbox"
+                        checked={preferences.analytics}
+                        onChange={() => handleToggle('analytics')}
+                      />
+                      <span className="cookie-toggle-slider"></span>
+                    </label>
+                  </div>
+                  <p className="cookie-category-description">
+                    Diese Cookies helfen uns zu verstehen, wie Besucher mit unserer Website interagieren, 
+                    indem sie Informationen anonym sammeln und melden. Dies hilft uns, die Website zu verbessern.
+                  </p>
+                </div>
+
+                {/* Cookies marketing */}
+                <div className="cookie-category">
+                  <div className="cookie-category-header">
+                    <div className="cookie-category-info">
+                      <h4>Marketing-Cookies</h4>
+                      <span className="cookie-badge">Optional</span>
+                    </div>
+                    <label className="cookie-toggle">
+                      <input
+                        type="checkbox"
+                        checked={preferences.marketing}
+                        onChange={() => handleToggle('marketing')}
+                      />
+                      <span className="cookie-toggle-slider"></span>
+                    </label>
+                  </div>
+                  <p className="cookie-category-description">
+                    Diese Cookies werden verwendet, um Ihnen relevante Werbung anzuzeigen. 
+                    Sie können auch verwendet werden, um die Anzahl der Anzeigen zu begrenzen und die Effektivität von Werbekampagnen zu messen.
+                  </p>
                 </div>
               </div>
 
-              <div className="cookie-category">
-                <div className="category-header">
-                  <div className="category-info">
-                    <h4>
-                      <i className="fas fa-sliders-h"></i>
-                      Funktionale Cookies
-                    </h4>
-                    <p>Diese Cookies ermöglichen erweiterte Funktionen und Personalisierung.</p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input 
-                      type="checkbox" 
-                      checked={preferences.functional}
-                      onChange={() => handlePreferenceChange('functional')}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
-                </div>
+              <div className="cookie-settings-actions">
+                <button onClick={saveCustom} className="cookie-btn cookie-btn-save">
+                  Auswahl speichern
+                </button>
+                <button onClick={acceptAll} className="cookie-btn cookie-btn-accept-all">
+                  Alle akzeptieren
+                </button>
               </div>
 
-              <div className="cookie-category">
-                <div className="category-header">
-                  <div className="category-info">
-                    <h4>
-                      <i className="fas fa-chart-line"></i>
-                      Analyse-Cookies
-                    </h4>
-                    <p>Diese Cookies helfen uns zu verstehen, wie Besucher mit der Website interagieren.</p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input 
-                      type="checkbox" 
-                      checked={preferences.analytics}
-                      onChange={() => handlePreferenceChange('analytics')}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
-                </div>
+              <div className="cookie-settings-footer">
+                <p>
+                  Weitere Informationen finden Sie in unserer{' '}
+                  <Link to="/datenschutz" className="cookie-link">Datenschutzerklärung</Link>
+                  {' '}und in unseren{' '}
+                  <Link to="/cookies" className="cookie-link">Cookie-Richtlinien</Link>.
+                </p>
               </div>
-
-              <div className="cookie-category">
-                <div className="category-header">
-                  <div className="category-info">
-                    <h4>
-                      <i className="fas fa-bullhorn"></i>
-                      Marketing-Cookies
-                    </h4>
-                    <p>Diese Cookies werden verwendet, um Ihnen relevante Werbung anzuzeigen.</p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input 
-                      type="checkbox" 
-                      checked={preferences.marketing}
-                      onChange={() => handlePreferenceChange('marketing')}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="cookie-actions">
-              <button onClick={() => setShowSettings(false)} className="btn btn-outline">
-                <i className="fas fa-arrow-left"></i>
-                Zurück
-              </button>
-              <button onClick={handleSavePreferences} className="btn btn-primary">
-                <i className="fas fa-save"></i>
-                Einstellungen speichern
-              </button>
-            </div>
-          </>
-        )}
-
-        <div className="cookie-links">
-          <a href="/privacy-policy">Datenschutzerklärung</a>
-          <span>•</span>
-          <a href="/legal-notice">Impressum</a>
-          <span>•</span>
-          <a href="/terms">AGB</a>
+            </>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
