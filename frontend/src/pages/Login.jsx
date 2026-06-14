@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { ROUTES } from '@/utils/constants';
+import useRecaptcha from '@/hooks/useRecaptcha';
+import RecaptchaBadge from '@/components/common/RecaptchaBadge';
 import './Auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { executeRecaptcha, isReady, error: recaptchaError } = useRecaptcha('login');
   
   const [formData, setFormData] = useState({
     email: '',
@@ -61,7 +64,17 @@ const Login = () => {
     setMessage({ type: '', text: '' });
 
     try {
-      const result = await login(formData.email, formData.password);
+      // Générer le token reCAPTCHA
+      const recaptchaToken = await executeRecaptcha();
+      
+      if (!recaptchaToken) {
+        setMessage({ type: 'error', text: 'reCAPTCHA-Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.' });
+        setLoading(false);
+        return;
+      }
+
+      // Connexion avec token reCAPTCHA
+      const result = await login(formData.email, formData.password, recaptchaToken);
       
       if (result.success) {
         setMessage({ type: 'success', text: 'Erfolgreich angemeldet!' });
@@ -131,10 +144,13 @@ const Login = () => {
                 </Link>
               </div>
 
-              <button 
-                type="submit" 
+              {/* Badge reCAPTCHA */}
+              <RecaptchaBadge isReady={isReady} error={recaptchaError} />
+
+              <button
+                type="submit"
                 className="btn btn-primary btn-block"
-                disabled={loading}
+                disabled={loading || !isReady}
               >
                 {loading ? 'Anmeldung läuft...' : 'Anmelden'}
               </button>

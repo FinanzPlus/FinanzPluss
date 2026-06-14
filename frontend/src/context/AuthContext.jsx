@@ -69,9 +69,9 @@ export const AuthProvider = ({ children }) => {
   /**
    * Connexion
    */
-  const login = async (email, password) => {
+  const login = async (email, password, recaptchaToken = null) => {
     try {
-      const result = await authService.login(email, password);
+      const result = await authService.login(email, password, recaptchaToken);
       
       if (result.success) {
         setUser(result.user);

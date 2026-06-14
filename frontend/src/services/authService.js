@@ -31,9 +31,15 @@ class AuthService {
   /**
    * Connexion d'un utilisateur
    */
-  async login(email, password) {
+  async login(email, password, recaptchaToken = null) {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const config = recaptchaToken ? {
+        headers: {
+          'X-Recaptcha-Token': recaptchaToken
+        }
+      } : {};
+
+      const response = await api.post('/auth/login', { email, password }, config);
       
       if (response.data.success) {
         const { user, accessToken, refreshToken } = response.data.data;
