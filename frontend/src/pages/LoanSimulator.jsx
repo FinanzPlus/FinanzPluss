@@ -46,9 +46,9 @@ const LoanSimulator = () => {
     {
       id: 4,
       name: 'BAWAG P.S.K.',
-      logo: '🚗',
+      logo: '💼',
       rate: 2.7,
-      specialties: ['Autokredit', 'Fahrzeugfinanzierung', 'Motorradkredit'],
+      specialties: ['Privatkredit', 'Konsumkredit', 'Umschuldung'],
       minAmount: 3000,
       maxAmount: 100000,
       minDuration: 12,
@@ -58,9 +58,9 @@ const LoanSimulator = () => {
     {
       id: 5,
       name: 'Volksbank',
-      logo: '🏠',
+      logo: '🏢',
       rate: 2.4,
-      specialties: ['Wohnbaukredit', 'Sanierungskredit', 'Energieeffizienz'],
+      specialties: ['Unternehmenskredit', 'Investitionskredit', 'Betriebsmittel'],
       minAmount: 10000,
       maxAmount: 400000,
       minDuration: 60,

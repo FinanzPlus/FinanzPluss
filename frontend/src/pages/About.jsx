@@ -75,16 +75,16 @@ const About = () => {
   // Expertise
   const expertise = [
     {
-      icon: '🏠',
-      title: 'Wohnkredite',
+      icon: '💰',
+      title: 'Privatkredite',
       count: '3.500+',
-      description: 'Vermittelte Wohnkredite mit durchschnittlich 0,3% besseren Konditionen'
+      description: 'Vermittelte Privatkredite mit durchschnittlich 0,3% besseren Konditionen'
     },
     {
-      icon: '🚗',
-      title: 'Autokredite',
+      icon: '🏢',
+      title: 'Unternehmenskredite',
       count: '2.800+',
-      description: 'Finanzierte Fahrzeuge mit flexiblen Laufzeiten und attraktiven Zinsen'
+      description: 'Finanzierte Unternehmen mit flexiblen Laufzeiten und attraktiven Zinsen'
     },
     {
       icon: '💼',

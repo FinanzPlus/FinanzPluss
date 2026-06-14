@@ -16,19 +16,19 @@ const Partners = () => {
       employees: '45.000+',
       rating: 'A+',
       website: 'https://www.erstebank.at',
-      specialties: ['Immobilienfinanzierung', 'Baufinanzierung', 'Wohnkredit'],
-      categories: ['immobilien', 'privat'],
+      specialties: ['Privatkredit', 'Konsumkredit', 'Umschuldung'],
+      categories: ['privat'],
       description: 'Die Erste Bank ist eine der größten und ältesten Banken Österreichs mit über 200 Jahren Erfahrung im Finanzwesen.',
       advantages: [
-        'Beste Konditionen für Immobilienfinanzierung',
+        'Beste Konditionen für Privatkredite',
         'Schnelle Kreditentscheidung in 24h',
         'Persönliche Beratung in über 200 Filialen',
         'Flexible Rückzahlungsoptionen'
       ],
       products: [
-        { name: 'Wohnkredit', rate: 'ab 2,5%', duration: '5-30 Jahre' },
-        { name: 'Baufinanzierung', rate: 'ab 2,3%', duration: '10-35 Jahre' },
-        { name: 'Privatkredit', rate: 'ab 3,9%', duration: '1-10 Jahre' }
+        { name: 'Privatkredit', rate: 'ab 2,5%', duration: '1-10 Jahre' },
+        { name: 'Konsumkredit', rate: 'ab 2,8%', duration: '1-8 Jahre' },
+        { name: 'Umschuldung', rate: 'ab 2,3%', duration: '1-12 Jahre' }
       ],
       certifications: ['ISO 9001', 'DSGVO', 'FMA Lizenz'],
       color: '#E2001A'
@@ -69,7 +69,7 @@ const Partners = () => {
       rating: 'A',
       website: 'https://www.bankaustria.at',
       specialties: ['Privatkredit', 'Konsumkredit', 'Umschuldung'],
-      categories: ['privat', 'auto'],
+      categories: ['privat'],
       description: 'Bank Austria ist Teil der UniCredit Gruppe und bietet umfassende Finanzdienstleistungen für Privat- und Firmenkunden.',
       advantages: [
         'Teil der internationalen UniCredit Gruppe',
@@ -79,7 +79,7 @@ const Partners = () => {
       ],
       products: [
         { name: 'Privatkredit', rate: 'ab 3,5%', duration: '1-8 Jahre' },
-        { name: 'Autokredit', rate: 'ab 2,9%', duration: '2-7 Jahre' },
+        { name: 'Konsumkredit', rate: 'ab 3,2%', duration: '1-7 Jahre' },
         { name: 'Umschuldung', rate: 'ab 3,2%', duration: '1-10 Jahre' }
       ],
       certifications: ['ISO 9001', 'DSGVO', 'FMA Lizenz'],
@@ -94,18 +94,18 @@ const Partners = () => {
       employees: '2.400+',
       rating: 'A-',
       website: 'https://www.bawagpsk.com',
-      specialties: ['Autokredit', 'Fahrzeugfinanzierung', 'Leasingübernahme'],
-      categories: ['auto', 'privat'],
-      description: 'BAWAG P.S.K. ist eine der größten Banken Österreichs mit besonderem Fokus auf Autofinanzierung und digitale Services.',
+      specialties: ['Privatkredit', 'Sofortkredit', 'Expresskredit'],
+      categories: ['privat'],
+      description: 'BAWAG P.S.K. ist eine der größten Banken Österreichs mit besonderem Fokus auf digitale Services und schnelle Kreditvergabe.',
       advantages: [
-        'Spezialist für Autofinanzierung',
+        'Spezialist für Sofortkredite',
         '100% digitaler Kreditprozess',
         'Sofortzusage in Echtzeit',
-        'Flexible Anzahlungsoptionen'
+        'Flexible Rückzahlungsoptionen'
       ],
       products: [
-        { name: 'Autokredit', rate: 'ab 2,7%', duration: '1-7 Jahre' },
-        { name: 'Motorradkredit', rate: 'ab 2,9%', duration: '1-5 Jahre' },
+        { name: 'Sofortkredit', rate: 'ab 2,7%', duration: '1-7 Jahre' },
+        { name: 'Expresskredit', rate: 'ab 2,9%', duration: '1-5 Jahre' },
         { name: 'Privatkredit', rate: 'ab 3,8%', duration: '1-8 Jahre' }
       ],
       certifications: ['ISO 27001', 'DSGVO', 'FMA Lizenz'],
@@ -120,19 +120,19 @@ const Partners = () => {
       employees: '3.200+',
       rating: 'BBB+',
       website: 'https://www.volksbank.at',
-      specialties: ['Wohnbaukredit', 'Sanierungskredit', 'Energieeffizienz'],
-      categories: ['immobilien', 'privat'],
-      description: 'Volksbank ist eine genossenschaftliche Bankengruppe mit starkem regionalem Bezug und Fokus auf nachhaltige Finanzierung.',
+      specialties: ['Unternehmenskredit', 'Investitionskredit', 'Betriebsmittelkredit'],
+      categories: ['unternehmen'],
+      description: 'Volksbank ist eine genossenschaftliche Bankengruppe mit starkem regionalem Bezug und Fokus auf Unternehmensfinanzierung.',
       advantages: [
         'Regionale Nähe und persönliche Betreuung',
-        'Spezialist für Wohnbauförderung',
+        'Spezialist für KMU-Finanzierung',
         'Nachhaltige Finanzierungsmodelle',
-        'Faire Konditionen für Sanierungen'
+        'Faire Konditionen für Investitionen'
       ],
       products: [
-        { name: 'Wohnbaukredit', rate: 'ab 2,4%', duration: '10-30 Jahre' },
-        { name: 'Sanierungskredit', rate: 'ab 2,6%', duration: '5-20 Jahre' },
-        { name: 'Privatkredit', rate: 'ab 4,1%', duration: '1-8 Jahre' }
+        { name: 'Unternehmenskredit', rate: 'ab 2,4%', duration: '1-15 Jahre' },
+        { name: 'Investitionskredit', rate: 'ab 2,6%', duration: '3-20 Jahre' },
+        { name: 'Betriebsmittelkredit', rate: 'ab 3,1%', duration: '1-10 Jahre' }
       ],
       certifications: ['ISO 9001', 'DSGVO', 'FMA Lizenz'],
       color: '#009640'
@@ -142,8 +142,6 @@ const Partners = () => {
   // Catégories de filtrage
   const categories = [
     { id: 'all', name: 'Alle Partner', icon: '🏦' },
-    { id: 'immobilien', name: 'Immobilien', icon: '🏠' },
-    { id: 'auto', name: 'Auto', icon: '🚗' },
     { id: 'privat', name: 'Privat', icon: '👤' },
     { id: 'unternehmen', name: 'Unternehmen', icon: '🏢' }
   ];

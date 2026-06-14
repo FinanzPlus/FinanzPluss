@@ -49,7 +49,7 @@ const Header = () => {
         {/* Navigation Desktop */}
         <nav className="header-nav desktop-nav">
           <Link to="/" className={`nav-link ${isActive('/')}`}>
-            🏠 Startseite
+            🏡 Startseite
           </Link>
           <Link to="/kreditrechner" className={`nav-link ${isActive('/kreditrechner')}`}>
             🧮 Kreditrechner
@@ -142,7 +142,7 @@ const Header = () => {
       <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         <nav className="mobile-nav">
           <Link to="/" className={`mobile-nav-link ${isActive('/')}`}>
-            🏠 Startseite
+            🏡 Startseite
           </Link>
           <Link to="/kreditrechner" className={`mobile-nav-link ${isActive('/kreditrechner')}`}>
             🧮 Kreditrechner
