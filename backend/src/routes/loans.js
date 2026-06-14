@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const loanController = require('../controllers/loanController');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const { financialLimiter } = require('../middleware/rateLimiter');
 
 /**
@@ -22,7 +22,7 @@ router.post('/simulations', financialLimiter, loanController.saveSimulation);
  * @desc    Récupère les simulations de l'utilisateur connecté
  * @access  Private
  */
-router.get('/simulations', authenticateToken, loanController.getUserSimulations);
+router.get('/simulations', authenticate, loanController.getUserSimulations);
 
 /**
  * @route   POST /api/loans/applications
