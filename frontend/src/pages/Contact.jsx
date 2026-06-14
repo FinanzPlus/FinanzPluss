@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import useRecaptcha from '../hooks/useRecaptcha';
+import RecaptchaBadge from '../components/common/RecaptchaBadge';
 import './Contact.css';
 
 const Contact = () => {
   const { user } = useAuth();
+  const { executeRecaptcha, isReady, error: recaptchaError } = useRecaptcha('contact');
   
   const [openingHours, setOpeningHours] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +63,21 @@ const Contact = () => {
     setError(null);
 
     try {
-      await api.post('/contact/messages', formData);
+      // Générer le token reCAPTCHA
+      const recaptchaToken = await executeRecaptcha();
+      
+      if (!recaptchaToken) {
+        setError('reCAPTCHA-Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+        setSubmitting(false);
+        return;
+      }
+
+      // Envoyer le formulaire avec le token reCAPTCHA
+      await api.post('/contact/messages', {
+        ...formData,
+        recaptchaToken
+      });
+      
       setSuccess(true);
       setFormData({
         name: user ? `${user.first_name} ${user.last_name}` : '',
@@ -304,10 +321,13 @@ const Contact = () => {
                   </div>
                 )}
 
-                <button 
-                  type="submit" 
+                {/* Badge reCAPTCHA */}
+                <RecaptchaBadge isReady={isReady} error={recaptchaError} />
+
+                <button
+                  type="submit"
                   className="btn btn-primary btn-submit"
-                  disabled={submitting}
+                  disabled={submitting || !isReady}
                 >
                   {submitting ? 'Wird gesendet...' : '📧 Nachricht senden'}
                 </button>
