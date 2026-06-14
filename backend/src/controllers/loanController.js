@@ -422,8 +422,4 @@ exports.validateApplication = [
   body('duration').isNumeric().withMessage('Durée invalide')
 ];
 
-module.exports = exports;
-
 // Made with ❤️ by Bob for FinanzPlus Austria
-
-// Made with Bob
