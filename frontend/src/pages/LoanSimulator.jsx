@@ -289,9 +289,23 @@ const LoanSimulator = () => {
 
     const purposeLabel = loanPurposes.find(p => p.value === formData.purpose)?.label || formData.purpose;
 
+    // Message WhatsApp
+    const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate bei ${selectedBank.name} beantragen. Zinssatz: ${selectedBank.rate}%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
+    const whatsappNumber = '4915565236794';
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
     try {
+      console.log('📧 [FRONTEND] Tentative d\'envoi de la demande au backend...');
+      
+      // Déterminer l'URL de l'API
+      const apiUrl = import.meta.env.VITE_API_URL ||
+                     window.location.origin.replace('finanzplus-frontend', 'finanzplus-backend').replace(':3000', ':5000') ||
+                     'https://finanzplus-backend.up.railway.app';
+      
+      console.log('📧 [FRONTEND] URL API:', apiUrl);
+
       // ÉTAPE 1 & 2: Sauvegarder dans la base de données et envoyer l'email automatique
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/loans/applications`, {
+      const response = await fetch(`${apiUrl}/api/loans/applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -313,34 +327,31 @@ const LoanSimulator = () => {
         })
       });
 
+      console.log('📧 [FRONTEND] Réponse reçue:', response.status);
+
       if (!response.ok) {
-        throw new Error('Fehler beim Senden der Anfrage');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ [FRONTEND] Erreur API:', errorData);
+        throw new Error(errorData.message || 'Fehler beim Senden der Anfrage');
       }
 
       const data = await response.json();
-      console.log('✅ Demande sauvegardée et email envoyé:', data);
+      console.log('✅ [FRONTEND] Demande sauvegardée et email envoyé:', data);
 
       // Afficher un message de confirmation
-      alert('✅ Ihre Anfrage wurde erfolgreich gespeichert!\n\nSie erhalten in Kürze eine Bestätigungs-E-Mail.\n\nSie werden jetzt zu WhatsApp weitergeleitet.');
+      alert('✅ Ihre Anfrage wurde erfolgreich gespeichert!\n\n📧 Sie erhalten in Kürze eine Bestätigungs-E-Mail.\n\n💬 Sie werden jetzt zu WhatsApp weitergeleitet.');
 
       // ÉTAPE 3: Redirection vers WhatsApp
-      const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate bei ${selectedBank.name} beantragen. Zinssatz: ${selectedBank.rate}%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
-      
-      const whatsappNumber = '4915565236794';
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-      
-      // Ouverture dans un nouvel onglet
       window.open(whatsappUrl, '_blank');
 
     } catch (error) {
-      console.error('❌ Erreur lors de la soumission:', error);
-      alert('⚠️ Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut oder kontaktieren Sie uns direkt per WhatsApp.');
+      console.error('❌ [FRONTEND] Erreur lors de la soumission:', error);
+      console.error('❌ [FRONTEND] Message:', error.message);
+      
+      // Message d'erreur plus informatif
+      alert(`⚠️ Hinweis: Die E-Mail-Benachrichtigung konnte nicht gesendet werden.\n\nAber keine Sorge! Sie werden trotzdem zu WhatsApp weitergeleitet und können Ihre Anfrage direkt an uns senden.\n\nFehler: ${error.message}`);
       
       // En cas d'erreur, rediriger quand même vers WhatsApp
-      const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate bei ${selectedBank.name} beantragen. Zinssatz: ${selectedBank.rate}%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
-      
-      const whatsappNumber = '4915565236794';
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     }
   };
