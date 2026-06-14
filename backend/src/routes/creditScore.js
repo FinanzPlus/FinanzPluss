@@ -4,6 +4,7 @@ const CreditScoreController = require('../controllers/creditScoreController');
 const { authenticate, isAdmin } = require('../middleware/auth');
 const { body, query, param } = require('express-validator');
 const { validate } = require('../middleware/validation');
+const { financialLimiter } = require('../middleware/rateLimiter');
 
 // ============================================================================
 // ROUTES UTILISATEUR AUTHENTIFIÉ
@@ -23,8 +24,10 @@ router.get('/my-score',
  * @route   POST /api/credit-score/calculate
  * @desc    Calculer et enregistrer le score de crédit de l'utilisateur
  * @access  Authentifié
+ * @protection Rate limit: 20 calculs par 10 minutes par IP
  */
 router.post('/calculate',
+  financialLimiter,
   authenticate,
   [
     body('credit_history_length_months')

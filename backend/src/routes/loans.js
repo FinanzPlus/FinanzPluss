@@ -7,13 +7,15 @@ const express = require('express');
 const router = express.Router();
 const loanController = require('../controllers/loanController');
 const { authenticateToken } = require('../middleware/auth');
+const { financialLimiter } = require('../middleware/rateLimiter');
 
 /**
  * @route   POST /api/loans/simulations
  * @desc    Sauvegarde une simulation de crédit
  * @access  Public (Private si authentifié)
+ * @protection Rate limit: 20 simulations par 10 minutes par IP
  */
-router.post('/simulations', loanController.saveSimulation);
+router.post('/simulations', financialLimiter, loanController.saveSimulation);
 
 /**
  * @route   GET /api/loans/simulations

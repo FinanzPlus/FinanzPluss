@@ -4,29 +4,30 @@
   "description": "Frontend React pour FinanzPlus Austria - Plateforme e-commerce",
   "private": true,
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.1",
     "axios": "^1.6.5",
+    "chart.js": "^4.4.1",
+    "date-fns": "^3.0.6",
+    "framer-motion": "^10.18.0",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-datepicker": "^4.25.0",
+    "react-dom": "^18.2.0",
+    "react-google-recaptcha": "^3.1.0",
     "react-hook-form": "^7.49.3",
     "react-icons": "^5.0.1",
-    "date-fns": "^3.0.6",
-    "chart.js": "^4.4.1",
-    "react-chartjs-2": "^5.2.0",
-    "react-toastify": "^10.0.3",
     "react-loading-skeleton": "^3.3.1",
     "react-modal": "^3.16.1",
+    "react-router-dom": "^6.21.1",
     "react-select": "^5.8.0",
-    "react-datepicker": "^4.25.0",
-    "swiper": "^11.0.5",
-    "framer-motion": "^10.18.0"
+    "react-toastify": "^10.0.3",
+    "swiper": "^11.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.0.11",
     "eslint": "^8.56.0",
     "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0"
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "vite": "^5.0.11"
   },
   "scripts": {
     "dev": "vite",

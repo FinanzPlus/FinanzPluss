@@ -2,12 +2,20 @@ const express = require('express');
 const router = express.Router();
 const contactController = require('../controllers/contactController');
 const { authenticate, isAdmin } = require('../middleware/auth');
+const { contactLimiter } = require('../middleware/rateLimiter');
 
 // Public routes
 router.get('/opening-hours', contactController.getOpeningHours);
 router.get('/opening-hours/:day', contactController.getOpeningHoursByDay);
 router.get('/is-open', contactController.checkIfOpen);
-router.post('/messages', contactController.createContactMessage);
+
+/**
+ * @route   POST /api/contact/messages
+ * @desc    Créer un message de contact
+ * @access  Public
+ * @protection Rate limit: 3 messages par heure par IP (anti-spam)
+ */
+router.post('/messages', contactLimiter, contactController.createContactMessage);
 
 // Protected routes (authenticated users)
 router.get('/messages/my', authenticate, contactController.getUserMessages);
