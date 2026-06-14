@@ -1,464 +1,610 @@
-/**
- * Email Service
- * Service pour l'envoi d'emails avec templates HTML professionnels
- */
-
 const nodemailer = require('nodemailer');
 
-class EmailService {
-  constructor() {
-    // Configuration du transporteur email
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: process.env.SMTP_PORT || 587,
-      secure: false, // true pour 465, false pour autres ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    });
-
-    this.fromEmail = process.env.SMTP_FROM || 'noreply@finanzplus.at';
-    this.fromName = 'FinanzPlus Austria';
-    this.companyEmail = 'kontakt@finanzplus.at';
-    this.companyPhone = '+43 123 456 789';
-    this.companyAddress = 'Hauptstraße 123, 1010 Wien, Österreich';
+// Configuration du transporteur SMTP
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: process.env.SMTP_PORT || 587,
+  secure: false, // true pour 465, false pour autres ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
   }
+});
 
-  /**
-   * Template HTML de base
-   */
-  getBaseTemplate(content, title = '') {
-    return `
+// Vérifier la connexion SMTP au démarrage
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('❌ Erreur de configuration SMTP:', error);
+  } else {
+    console.log('✅ Serveur SMTP prêt à envoyer des emails');
+  }
+});
+
+/**
+ * Template HTML professionnel pour l'email de confirmation client
+ */
+const getClientConfirmationTemplate = (data) => {
+  const { firstName, lastName, email, amount, duration, selectedBank, monthlyPayment, purpose, submittedAt } = data;
+  
+  return `
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title>
+  <title>Kreditanfrage Bestätigung</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
       line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+    .header {
+      background: linear-gradient(135deg, #0A1628 0%, #1a2d4a 100%);
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #C9A84C;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+    .header-subtitle {
+      color: #ffffff;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 24px;
+      color: #0A1628;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .message {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 30px;
+      line-height: 1.8;
+    }
+    .highlight {
+      color: #C9A84C;
+      font-weight: 600;
+    }
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .details-table tr {
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .details-table tr:last-child {
+      border-bottom: none;
+    }
+    .details-table td {
+      padding: 15px 20px;
+      font-size: 15px;
+    }
+    .details-table td:first-child {
+      font-weight: 600;
+      color: #0A1628;
+      width: 45%;
+    }
+    .details-table td:last-child {
+      color: #555;
+      text-align: right;
+    }
+    .amount-highlight {
+      background-color: #0A1628;
+      color: #C9A84C;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .info-box {
+      background-color: #e8f4f8;
+      border-left: 4px solid #C9A84C;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 4px;
+    }
+    .info-box p {
+      margin: 0;
+      color: #0A1628;
+      font-size: 15px;
+    }
+    .contact-section {
+      background-color: #f9f9f9;
+      padding: 30px;
+      margin: 30px 0;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .contact-title {
+      font-size: 20px;
+      color: #0A1628;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    .contact-info {
+      display: inline-block;
+      text-align: left;
+      margin: 0 auto;
+    }
+    .contact-item {
+      margin: 10px 0;
+      font-size: 15px;
+      color: #555;
+    }
+    .contact-item strong {
+      color: #0A1628;
+      display: inline-block;
+      width: 120px;
+    }
+    .whatsapp-button {
+      display: inline-block;
+      background-color: #25D366;
+      color: white;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    .whatsapp-button:hover {
+      background-color: #20BA5A;
+    }
+    .footer {
+      background-color: #0A1628;
+      color: #ffffff;
+      padding: 30px;
+      text-align: center;
+    }
+    .footer-logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #C9A84C;
+      margin-bottom: 15px;
+    }
+    .footer-address {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-bottom: 15px;
+    }
+    .footer-links {
+      margin: 20px 0;
+    }
+    .footer-links a {
+      color: #C9A84C;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 13px;
+    }
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+    .copyright {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 15px;
+    }
+    @media only screen and (max-width: 600px) {
+      .content {
+        padding: 30px 20px;
+      }
+      .greeting {
+        font-size: 20px;
+      }
+      .details-table td {
+        padding: 12px 15px;
+        font-size: 14px;
+      }
+      .contact-section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">FINANZPLUS</div>
+      <div class="header-subtitle">Ihr vertrauenswürdiger Finanzpartner in Österreich</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="greeting">Sehr geehrte/r ${firstName} ${lastName},</div>
+      
+      <div class="message">
+        <p>vielen Dank für Ihr Vertrauen in <span class="highlight">FinanzPlus Austria</span>!</p>
+        <br>
+        <p>Wir haben Ihre Kreditanfrage erfolgreich erhalten und werden diese umgehend bearbeiten. Unser Expertenteam wird Ihre Anfrage sorgfältig prüfen und sich <strong>innerhalb von 24 Stunden</strong> bei Ihnen melden.</p>
+      </div>
+
+      <!-- Details Table -->
+      <table class="details-table">
+        <tr>
+          <td>Ausgewählte Bank</td>
+          <td><strong>${selectedBank.name}</strong></td>
+        </tr>
+        <tr class="amount-highlight">
+          <td>Kreditbetrag</td>
+          <td>€ ${amount.toLocaleString('de-AT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        </tr>
+        <tr>
+          <td>Laufzeit</td>
+          <td>${duration} Monate</td>
+        </tr>
+        <tr>
+          <td>Zinssatz</td>
+          <td>${selectedBank.rate}% p.a.</td>
+        </tr>
+        <tr>
+          <td>Monatliche Rate</td>
+          <td><strong>€ ${monthlyPayment.toLocaleString('de-AT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+        </tr>
+        <tr>
+          <td>Verwendungszweck</td>
+          <td>${purpose || 'Nicht angegeben'}</td>
+        </tr>
+        <tr>
+          <td>Eingereicht am</td>
+          <td>${submittedAt}</td>
+        </tr>
+      </table>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <p><strong>📋 Nächste Schritte:</strong></p>
+        <p>Unser Team wird Ihre Bonität prüfen und Ihnen die besten verfügbaren Konditionen anbieten. Sie erhalten in Kürze eine detaillierte Rückmeldung per E-Mail oder Telefon.</p>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="contact-section">
+        <div class="contact-title">Haben Sie Fragen?</div>
+        <div class="contact-info">
+          <div class="contact-item">
+            <strong>📧 E-Mail:</strong> kontakt@finanzplus.at
+          </div>
+          <div class="contact-item">
+            <strong>📞 Telefon:</strong> +43 123 456 789
+          </div>
+          <div class="contact-item">
+            <strong>🕐 Öffnungszeiten:</strong> Mo-Fr, 09:00-18:00 Uhr
+          </div>
+        </div>
+        <a href="https://wa.me/43123456789?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20meiner%20Kreditanfrage" class="whatsapp-button">
+          💬 WhatsApp kontaktieren
+        </a>
+      </div>
+
+      <div class="message">
+        <p>Wir freuen uns darauf, Sie bei der Verwirklichung Ihrer Pläne zu unterstützen!</p>
+        <br>
+        <p>Mit freundlichen Grüßen,<br>
+        <strong>Ihr FinanzPlus Austria Team</strong></p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-logo">FINANZPLUS</div>
+      <div class="footer-address">
+        FinanzPlus Austria GmbH<br>
+        Hauptstraße 123, 1010 Wien, Österreich<br>
+        Tel: +43 123 456 789 | E-Mail: kontakt@finanzplus.at
+      </div>
+      <div class="footer-links">
+        <a href="${process.env.FRONTEND_URL}/impressum">Impressum</a> |
+        <a href="${process.env.FRONTEND_URL}/datenschutz">Datenschutz</a> |
+        <a href="${process.env.FRONTEND_URL}/agb">AGB</a>
+      </div>
+      <div class="copyright">
+        © ${new Date().getFullYear()} FinanzPlus Austria GmbH. Alle Rechte vorbehalten.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+};
+
+/**
+ * Template HTML pour la notification interne à l'équipe
+ */
+const getTeamNotificationTemplate = (application) => {
+  const { first_name, last_name, email, phone, amount, duration, bank_name, bank_rate, monthly_payment, purpose, created_at } = application;
+  
+  return `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neue Kreditanfrage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
     }
     .container {
       max-width: 600px;
       margin: 0 auto;
-      background: white;
-      border-radius: 10px;
+      background-color: #ffffff;
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .header {
-      background: linear-gradient(135deg, #0A1628 0%, #1a2d4a 100%);
+      background-color: #d32f2f;
       color: white;
-      padding: 30px;
+      padding: 20px;
       text-align: center;
     }
-    .logo {
-      font-size: 28px;
-      font-weight: bold;
-      color: #C9A84C;
-      margin-bottom: 10px;
-    }
-    .tagline {
-      font-size: 14px;
-      color: #e0e0e0;
-    }
-    .content {
-      padding: 40px 30px;
-      color: #333;
-    }
-    .content h2 {
-      color: #0A1628;
-      margin-bottom: 20px;
+    .header h1 {
+      margin: 0;
       font-size: 24px;
     }
-    .content p {
-      margin-bottom: 15px;
-      color: #555;
-    }
-    .button {
-      display: inline-block;
-      padding: 12px 30px;
-      background: linear-gradient(135deg, #C9A84C 0%, #d4b961 100%);
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      margin: 20px 0;
-      font-weight: bold;
-    }
-    .info-box {
-      background: #f8f9fa;
-      border-left: 4px solid #C9A84C;
-      padding: 15px;
-      margin: 20px 0;
-      border-radius: 5px;
-    }
-    .footer {
-      background: #f8f9fa;
+    .content {
       padding: 30px;
-      text-align: center;
-      color: #666;
+    }
+    .alert {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .info-table tr {
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .info-table td {
+      padding: 12px;
       font-size: 14px;
     }
-    .footer a {
+    .info-table td:first-child {
+      font-weight: bold;
+      width: 40%;
       color: #0A1628;
-      text-decoration: none;
     }
-    .social-links {
+    .highlight {
+      background-color: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
       margin: 20px 0;
     }
-    .social-links a {
+    .action-button {
       display: inline-block;
-      margin: 0 10px;
-      color: #0A1628;
-    }
-    .divider {
-      height: 1px;
-      background: #e0e0e0;
-      margin: 20px 0;
+      background-color: #0A1628;
+      color: white;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">FinanzPlus Austria</div>
-      <div class="tagline">Ihr vertrauenswürdiger Finanzpartner</div>
+      <h1>🔔 Neue Kreditanfrage eingegangen!</h1>
     </div>
     <div class="content">
-      ${content}
-    </div>
-    <div class="footer">
-      <p><strong>FinanzPlus Austria GmbH</strong></p>
-      <p>${this.companyAddress}</p>
-      <p>Tel: ${this.companyPhone} | Email: ${this.companyEmail}</p>
-      <div class="divider"></div>
-      <p style="font-size: 12px; color: #999;">
-        Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht direkt auf diese E-Mail.
-      </p>
-      <p style="font-size: 12px; color: #999; margin-top: 10px;">
-        © ${new Date().getFullYear()} FinanzPlus Austria. Alle Rechte vorbehalten.
-      </p>
+      <div class="alert">
+        <strong>⚠️ Aktion erforderlich:</strong> Eine neue Kreditanfrage muss innerhalb von 24 Stunden bearbeitet werden.
+      </div>
+
+      <h2>Kundeninformationen</h2>
+      <table class="info-table">
+        <tr>
+          <td>Name</td>
+          <td>${first_name} ${last_name}</td>
+        </tr>
+        <tr>
+          <td>E-Mail</td>
+          <td><a href="mailto:${email}">${email}</a></td>
+        </tr>
+        <tr>
+          <td>Telefon</td>
+          <td><a href="tel:${phone}">${phone}</a></td>
+        </tr>
+      </table>
+
+      <h2>Kreditdetails</h2>
+      <table class="info-table">
+        <tr>
+          <td>Bank</td>
+          <td><strong>${bank_name}</strong></td>
+        </tr>
+        <tr>
+          <td>Kreditbetrag</td>
+          <td><strong>€ ${amount.toLocaleString('de-AT', { minimumFractionDigits: 2 })}</strong></td>
+        </tr>
+        <tr>
+          <td>Laufzeit</td>
+          <td>${duration} Monate</td>
+        </tr>
+        <tr>
+          <td>Zinssatz</td>
+          <td>${bank_rate}% p.a.</td>
+        </tr>
+        <tr>
+          <td>Monatliche Rate</td>
+          <td>€ ${monthly_payment.toLocaleString('de-AT', { minimumFractionDigits: 2 })}</td>
+        </tr>
+        <tr>
+          <td>Verwendungszweck</td>
+          <td>${purpose || 'Nicht angegeben'}</td>
+        </tr>
+        <tr>
+          <td>Eingereicht am</td>
+          <td>${new Date(created_at).toLocaleString('de-AT')}</td>
+        </tr>
+      </table>
+
+      <div class="highlight">
+        <strong>📊 Nächste Schritte:</strong>
+        <ul>
+          <li>Bonitätsprüfung durchführen</li>
+          <li>Kunden innerhalb von 24h kontaktieren</li>
+          <li>Angebot erstellen und versenden</li>
+        </ul>
+      </div>
+
+      <center>
+        <a href="mailto:${email}" class="action-button">Kunde kontaktieren</a>
+      </center>
     </div>
   </div>
 </body>
 </html>
-    `;
-  }
+  `;
+};
 
-  /**
-   * Email de bienvenue
-   */
-  async sendWelcomeEmail(user) {
-    const content = `
-      <h2>Willkommen bei FinanzPlus Austria! 🎉</h2>
-      <p>Sehr geehrte/r ${user.firstName} ${user.lastName},</p>
-      <p>Vielen Dank für Ihre Registrierung bei FinanzPlus Austria. Wir freuen uns, Sie als neuen Kunden begrüßen zu dürfen!</p>
-      
-      <div class="info-box">
-        <p><strong>Ihre Vorteile:</strong></p>
-        <ul>
-          <li>✓ Zugang zu über 15 österreichischen Banken</li>
-          <li>✓ Kostenloser Kreditvergleich</li>
-          <li>✓ Persönliche Beratung</li>
-          <li>✓ Schnelle Bearbeitung</li>
-        </ul>
-      </div>
-
-      <p>Sie können sich jetzt anmelden und Ihre erste Kreditanfrage stellen:</p>
-      <a href="${process.env.FRONTEND_URL}/login" class="button">Jetzt anmelden</a>
-
-      <p>Bei Fragen stehen wir Ihnen gerne zur Verfügung.</p>
-      <p>Mit freundlichen Grüßen,<br>Ihr FinanzPlus Austria Team</p>
-    `;
-
-    const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
-      to: user.email,
-      subject: 'Willkommen bei FinanzPlus Austria! 🎉',
-      html: this.getBaseTemplate(content, 'Willkommen')
-    };
-
-    return await this.transporter.sendMail(mailOptions);
-  }
-
-  /**
-   * Email de confirmation de demande de prêt
-   */
-  async sendLoanRequestConfirmation(user, loanRequest) {
-    const content = `
-      <h2>Ihre Kreditanfrage wurde eingereicht ✅</h2>
-      <p>Sehr geehrte/r ${user.firstName} ${user.lastName},</p>
-      <p>Wir haben Ihre Kreditanfrage erfolgreich erhalten und werden diese umgehend bearbeiten.</p>
-      
-      <div class="info-box">
-        <p><strong>Details Ihrer Anfrage:</strong></p>
-        <p>📋 Anfrage-ID: <strong>${loanRequest.id}</strong></p>
-        <p>💰 Betrag: <strong>€${loanRequest.amount.toLocaleString('de-AT')}</strong></p>
-        <p>📅 Laufzeit: <strong>${loanRequest.duration} Monate</strong></p>
-        <p>🎯 Zweck: <strong>${loanRequest.purpose}</strong></p>
-        <p>📊 Status: <strong>${this.getStatusText(loanRequest.status)}</strong></p>
-      </div>
-
-      <p><strong>Nächste Schritte:</strong></p>
-      <ol>
-        <li>Wir prüfen Ihre Anfrage (1-2 Werktage)</li>
-        <li>Sie erhalten passende Angebote von unseren Partnerbanken</li>
-        <li>Sie wählen das beste Angebot aus</li>
-        <li>Wir begleiten Sie bis zur Auszahlung</li>
-      </ol>
-
-      <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Status verfolgen</a>
-
-      <p>Bei Fragen kontaktieren Sie uns gerne per WhatsApp oder Telefon.</p>
-      <p>Mit freundlichen Grüßen,<br>Ihr FinanzPlus Austria Team</p>
-    `;
-
-    const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
-      to: user.email,
-      subject: `Kreditanfrage #${loanRequest.id} eingereicht`,
-      html: this.getBaseTemplate(content, 'Anfrage bestätigt')
-    };
-
-    return await this.transporter.sendMail(mailOptions);
-  }
-
-  /**
-   * Email de mise à jour de statut
-   */
-  async sendStatusUpdate(user, loanRequest, newStatus) {
-    const statusMessages = {
-      'pending': 'Ihre Anfrage wird geprüft',
-      'approved': 'Ihre Anfrage wurde genehmigt! 🎉',
-      'rejected': 'Leider wurde Ihre Anfrage abgelehnt',
-      'completed': 'Ihr Kredit wurde ausgezahlt! ✅'
-    };
-
-    const content = `
-      <h2>${statusMessages[newStatus]}</h2>
-      <p>Sehr geehrte/r ${user.firstName} ${user.lastName},</p>
-      <p>Der Status Ihrer Kreditanfrage hat sich geändert.</p>
-      
-      <div class="info-box">
-        <p>📋 Anfrage-ID: <strong>${loanRequest.id}</strong></p>
-        <p>📊 Neuer Status: <strong>${this.getStatusText(newStatus)}</strong></p>
-        <p>💰 Betrag: <strong>€${loanRequest.amount.toLocaleString('de-AT')}</strong></p>
-      </div>
-
-      ${this.getStatusSpecificContent(newStatus, loanRequest)}
-
-      <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Details ansehen</a>
-
-      <p>Mit freundlichen Grüßen,<br>Ihr FinanzPlus Austria Team</p>
-    `;
-
-    const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
-      to: user.email,
-      subject: `Status-Update: Kreditanfrage #${loanRequest.id}`,
-      html: this.getBaseTemplate(content, 'Status-Update')
-    };
-
-    return await this.transporter.sendMail(mailOptions);
-  }
-
-  /**
-   * Email de nouveau document requis
-   */
-  async sendDocumentRequest(user, loanRequest, documents) {
-    const content = `
-      <h2>Dokumente erforderlich 📄</h2>
-      <p>Sehr geehrte/r ${user.firstName} ${user.lastName},</p>
-      <p>Für die Bearbeitung Ihrer Kreditanfrage benötigen wir noch folgende Dokumente:</p>
-      
-      <div class="info-box">
-        <p><strong>Erforderliche Dokumente:</strong></p>
-        <ul>
-          ${documents.map(doc => `<li>📄 ${doc}</li>`).join('')}
-        </ul>
-      </div>
-
-      <p>Bitte laden Sie die Dokumente in Ihrem Dashboard hoch:</p>
-      <a href="${process.env.FRONTEND_URL}/dashboard/documents" class="button">Dokumente hochladen</a>
-
-      <p><strong>Wichtig:</strong> Die Bearbeitung kann erst fortgesetzt werden, wenn alle Dokumente vorliegen.</p>
-      <p>Mit freundlichen Grüßen,<br>Ihr FinanzPlus Austria Team</p>
-    `;
-
-    const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
-      to: user.email,
-      subject: 'Dokumente erforderlich - Kreditanfrage',
-      html: this.getBaseTemplate(content, 'Dokumente erforderlich')
-    };
-
-    return await this.transporter.sendMail(mailOptions);
-  }
-
-  /**
-   * Email de rendez-vous confirmé
-   */
-  async sendAppointmentConfirmation(user, appointment) {
-    const content = `
-      <h2>Termin bestätigt ✅</h2>
-      <p>Sehr geehrte/r ${user.firstName} ${user.lastName},</p>
-      <p>Ihr Beratungstermin wurde erfolgreich bestätigt.</p>
-      
-      <div class="info-box">
-        <p><strong>Termin-Details:</strong></p>
-        <p>📅 Datum: <strong>${appointment.date}</strong></p>
-        <p>🕐 Uhrzeit: <strong>${appointment.time}</strong></p>
-        <p>📍 Ort: <strong>${appointment.location || 'Online (Video-Call)'}</strong></p>
-        <p>👤 Berater: <strong>${appointment.advisor || 'Wird noch zugewiesen'}</strong></p>
-      </div>
-
-      <p><strong>Bitte bringen Sie mit:</strong></p>
-      <ul>
-        <li>Personalausweis oder Reisepass</li>
-        <li>Einkommensnachweise (letzte 3 Monate)</li>
-        <li>Kontoauszüge</li>
-      </ul>
-
-      <a href="${process.env.FRONTEND_URL}/dashboard" class="button">Termin verwalten</a>
-
-      <p>Bei Fragen oder Terminänderungen kontaktieren Sie uns bitte rechtzeitig.</p>
-      <p>Mit freundlichen Grüßen,<br>Ihr FinanzPlus Austria Team</p>
-    `;
-
-    const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
-      to: user.email,
-      subject: 'Termin bestätigt - FinanzPlus Austria',
-      html: this.getBaseTemplate(content, 'Termin bestätigt')
-    };
-
-    return await this.transporter.sendMail(mailOptions);
-  }
-
-  /**
-   * Email de réinitialisation de mot de passe
-   */
-  async sendPasswordReset(user, resetToken) {
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+/**
+ * Envoyer l'email de confirmation au client
+ */
+const sendClientConfirmationEmail = async (data) => {
+  try {
+    const { firstName, lastName, email, amount, duration, selectedBank, monthlyPayment, purpose } = data;
     
-    const content = `
-      <h2>Passwort zurücksetzen 🔐</h2>
-      <p>Sehr geehrte/r ${user.firstName} ${user.lastName},</p>
-      <p>Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts gestellt.</p>
-      
-      <div class="info-box">
-        <p><strong>⚠️ Wichtig:</strong></p>
-        <p>Dieser Link ist nur 1 Stunde gültig.</p>
-        <p>Wenn Sie diese Anfrage nicht gestellt haben, ignorieren Sie diese E-Mail.</p>
-      </div>
-
-      <a href="${resetUrl}" class="button">Passwort zurücksetzen</a>
-
-      <p>Oder kopieren Sie diesen Link in Ihren Browser:</p>
-      <p style="word-break: break-all; color: #666; font-size: 12px;">${resetUrl}</p>
-
-      <p>Mit freundlichen Grüßen,<br>Ihr FinanzPlus Austria Team</p>
-    `;
+    // Formater la date et l'heure
+    const submittedAt = new Date().toLocaleString('de-AT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
 
     const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
-      to: user.email,
-      subject: 'Passwort zurücksetzen - FinanzPlus Austria',
-      html: this.getBaseTemplate(content, 'Passwort zurücksetzen')
+      from: `"FinanzPlus Austria" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+      to: email,
+      subject: `Ihre Kreditanfrage wurde erfolgreich eingereicht – FinanzPlus Austria`,
+      html: getClientConfirmationTemplate({
+        firstName,
+        lastName,
+        email,
+        amount,
+        duration,
+        selectedBank,
+        monthlyPayment,
+        purpose,
+        submittedAt
+      }),
+      // Version texte pour les clients email qui ne supportent pas HTML
+      text: `
+Sehr geehrte/r ${firstName} ${lastName},
+
+vielen Dank für Ihr Vertrauen in FinanzPlus Austria!
+
+Wir haben Ihre Kreditanfrage erfolgreich erhalten und werden diese umgehend bearbeiten.
+
+Details Ihrer Anfrage:
+- Bank: ${selectedBank.name}
+- Kreditbetrag: € ${amount.toLocaleString('de-AT')}
+- Laufzeit: ${duration} Monate
+- Zinssatz: ${selectedBank.rate}% p.a.
+- Monatliche Rate: € ${monthlyPayment.toLocaleString('de-AT')}
+- Eingereicht am: ${submittedAt}
+
+Unser Team wird sich innerhalb von 24 Stunden bei Ihnen melden.
+
+Bei Fragen erreichen Sie uns:
+E-Mail: kontakt@finanzplus.at
+Telefon: +43 123 456 789
+Öffnungszeiten: Mo-Fr, 09:00-18:00 Uhr
+
+Mit freundlichen Grüßen,
+Ihr FinanzPlus Austria Team
+      `
     };
 
-    return await this.transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email de confirmation envoyé au client:', info.messageId);
+    return { success: true, messageId: info.messageId };
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'envoi de l\'email client:', error);
+    throw error;
   }
+};
 
-  /**
-   * Email de notification admin (nouvelle demande)
-   */
-  async sendAdminNotification(loanRequest, user) {
-    const content = `
-      <h2>Neue Kreditanfrage eingegangen 🔔</h2>
-      <p>Eine neue Kreditanfrage wurde eingereicht und wartet auf Bearbeitung.</p>
-      
-      <div class="info-box">
-        <p><strong>Kunden-Details:</strong></p>
-        <p>👤 Name: <strong>${user.firstName} ${user.lastName}</strong></p>
-        <p>📧 Email: <strong>${user.email}</strong></p>
-        <p>📞 Telefon: <strong>${user.phone || 'Nicht angegeben'}</strong></p>
-      </div>
-
-      <div class="info-box">
-        <p><strong>Anfrage-Details:</strong></p>
-        <p>📋 ID: <strong>${loanRequest.id}</strong></p>
-        <p>💰 Betrag: <strong>€${loanRequest.amount.toLocaleString('de-AT')}</strong></p>
-        <p>📅 Laufzeit: <strong>${loanRequest.duration} Monate</strong></p>
-        <p>🎯 Zweck: <strong>${loanRequest.purpose}</strong></p>
-        <p>📊 Bonität: <strong>${loanRequest.creditScore || 'Noch nicht bewertet'}</strong></p>
-      </div>
-
-      <a href="${process.env.FRONTEND_URL}/admin/dashboard" class="button">Anfrage bearbeiten</a>
-
-      <p>Bitte bearbeiten Sie diese Anfrage zeitnah.</p>
-    `;
-
+/**
+ * Envoyer la notification à l'équipe interne
+ */
+const sendTeamNotificationEmail = async (application) => {
+  try {
     const mailOptions = {
-      from: `"${this.fromName}" <${this.fromEmail}>`,
+      from: `"FinanzPlus System" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: process.env.ADMIN_EMAIL || 'admin@finanzplus.at',
-      subject: `Neue Kreditanfrage #${loanRequest.id}`,
-      html: this.getBaseTemplate(content, 'Neue Anfrage')
+      subject: `🔔 Neue Kreditanfrage: ${application.first_name} ${application.last_name} - € ${application.amount.toLocaleString('de-AT')}`,
+      html: getTeamNotificationTemplate(application),
+      text: `
+NEUE KREDITANFRAGE EINGEGANGEN
+
+Kunde: ${application.first_name} ${application.last_name}
+E-Mail: ${application.email}
+Telefon: ${application.phone}
+
+Kreditdetails:
+- Bank: ${application.bank_name}
+- Betrag: € ${application.amount.toLocaleString('de-AT')}
+- Laufzeit: ${application.duration} Monate
+- Zinssatz: ${application.bank_rate}% p.a.
+- Monatliche Rate: € ${application.monthly_payment.toLocaleString('de-AT')}
+- Verwendungszweck: ${application.purpose || 'Nicht angegeben'}
+
+Eingereicht am: ${new Date(application.created_at).toLocaleString('de-AT')}
+
+AKTION ERFORDERLICH: Kunde innerhalb von 24h kontaktieren!
+      `
     };
 
-    return await this.transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Notification envoyée à l\'équipe:', info.messageId);
+    return { success: true, messageId: info.messageId };
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'envoi de la notification équipe:', error);
+    throw error;
   }
+};
 
-  /**
-   * Helpers
-   */
-  getStatusText(status) {
-    const statusMap = {
-      'pending': 'In Bearbeitung',
-      'approved': 'Genehmigt',
-      'rejected': 'Abgelehnt',
-      'completed': 'Abgeschlossen'
-    };
-    return statusMap[status] || status;
-  }
-
-  getStatusSpecificContent(status, loanRequest) {
-    switch(status) {
-      case 'approved':
-        return `
-          <p><strong>Herzlichen Glückwunsch!</strong> Ihre Kreditanfrage wurde genehmigt.</p>
-          <p>Wir haben passende Angebote von unseren Partnerbanken für Sie zusammengestellt.</p>
-          <p>Nächster Schritt: Wählen Sie das beste Angebot aus und schließen Sie den Vertrag ab.</p>
-        `;
-      case 'rejected':
-        return `
-          <p>Leider konnten wir für Ihre Anfrage kein passendes Angebot finden.</p>
-          <p>Mögliche Gründe:</p>
-          <ul>
-            <li>Unzureichende Bonität</li>
-            <li>Zu hohes Einkommen-zu-Schulden-Verhältnis</li>
-            <li>Fehlende Dokumente</li>
-          </ul>
-          <p>Gerne beraten wir Sie persönlich zu Alternativen.</p>
-        `;
-      case 'completed':
-        return `
-          <p><strong>Glückwunsch!</strong> Ihr Kredit wurde erfolgreich ausgezahlt.</p>
-          <p>Der Betrag sollte in den nächsten 1-2 Werktagen auf Ihrem Konto sein.</p>
-          <p>Ihre monatliche Rate beträgt: <strong>€${loanRequest.monthlyPayment?.toLocaleString('de-AT')}</strong></p>
-        `;
-      default:
-        return '<p>Wir halten Sie über weitere Entwicklungen auf dem Laufenden.</p>';
-    }
-  }
-}
-
-module.exports = new EmailService();
+module.exports = {
+  sendClientConfirmationEmail,
+  sendTeamNotificationEmail,
+  transporter
+};
 
 // Made with Bob
