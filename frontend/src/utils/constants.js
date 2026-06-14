@@ -18,7 +18,7 @@ export const ITEMS_PER_PAGE = parseInt(import.meta.env.VITE_ITEMS_PER_PAGE) || 1
 
 // Informations de contact
 export const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || 'info@finanzplus-austria.com';
-export const CONTACT_PHONE = import.meta.env.VITE_CONTACT_PHONE || '+43123456789';
+export const CONTACT_PHONE = import.meta.env.VITE_CONTACT_PHONE || '+49 155 652367949';
 export const CONTACT_ADDRESS = import.meta.env.VITE_CONTACT_ADDRESS || 'Musterstraße 123, 1010 Wien, Österreich';
 
 // Catégories de produits

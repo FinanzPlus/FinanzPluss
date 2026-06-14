@@ -259,7 +259,7 @@ const LoanSimulator = () => {
         
         <div class="footer">
           <p><strong>FinanzPlus Austria GmbH</strong></p>
-          <p>Stephansplatz 1, 1010 Wien | Tel: +43 1 234 5678 | Email: info@finanzplus.at</p>
+          <p>Stephansplatz 1, 1010 Wien | Tel: +49 155 65236794 | Email: info@finanzplus.at</p>
           <p>Erstellt am: ${new Date().toLocaleDateString('de-AT', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           <p style="margin-top: 10px; font-style: italic;">Dies ist eine unverbindliche Berechnung. Die tatsächlichen Konditionen können abweichen.</p>
         </div>
@@ -292,7 +292,7 @@ const LoanSimulator = () => {
     const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate bei ${selectedBank.name} beantragen. Zinssatz: ${selectedBank.rate}%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
     
     // Numéro WhatsApp (à remplacer par le vrai numéro)
-    const whatsappNumber = '436641234567'; // Format international sans + ni espaces
+    const whatsappNumber = '4915565236794'; // Format international sans + ni espaces
     
     // Construction du lien WhatsApp
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;

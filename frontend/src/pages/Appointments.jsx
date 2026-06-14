@@ -30,7 +30,7 @@ const Appointments = () => {
   };
 
   const handlePhoneCall = () => {
-    window.location.href = 'tel:+43123456789';
+    window.location.href = 'tel:+49 155 652367949';
   };
 
   return (
@@ -214,8 +214,8 @@ const Appointments = () => {
                   <div className="contact-icon">📞</div>
                   <h3>Telefon</h3>
                   <p>Rufen Sie uns direkt an für eine sofortige Beratung</p>
-                  <a href="tel:+43123456789" className="contact-button">
-                    +43 123 456 789
+                  <a href="tel:+49 155 652367949" className="contact-button">
+                    +49 155 65236794
                   </a>
                   <p className="contact-hours">Mo-Fr: 09:00 - 18:00 Uhr</p>
                 </div>
@@ -254,8 +254,8 @@ const Appointments = () => {
                   Bei dringenden Anliegen erreichen Sie uns auch außerhalb 
                   der Geschäftszeiten über unsere Notfall-Hotline:
                 </p>
-                <a href="tel:+43123456700" className="emergency-button">
-                  📞 Notfall-Hotline: +43 123 456 700
+                <a href="tel:+49 155 65236794" className="emergency-button">
+                  📞 Notfall-Hotline: +49 155 65236794
                 </a>
                 <p className="emergency-note">
                   Verfügbar: Mo-So, 08:00 - 22:00 Uhr

@@ -159,7 +159,7 @@ const FAQ = () => {
               <i className="fas fa-envelope"></i>
               Kontakt aufnehmen
             </a>
-            <a href="https://wa.me/436641234567" className="btn btn-success" target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/4915565236794" className="btn btn-success" target="_blank" rel="noopener noreferrer">
               <i className="fab fa-whatsapp"></i>
               WhatsApp Chat
             </a>

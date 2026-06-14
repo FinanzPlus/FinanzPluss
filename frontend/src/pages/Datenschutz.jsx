@@ -72,7 +72,7 @@ const Datenschutz = () => {
                     1010 Wien, Österreich<br />
                     <br />
                     E-Mail: datenschutz@finanzplus.at<br />
-                    Telefon: +43 1 234 5678<br />
+                    Telefon: +49 155 65236794<br />
                     Datenschutzbeauftragter: Dr. Michael Schneider
                   </div>
                 </div>

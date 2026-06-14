@@ -150,7 +150,7 @@ const Contact = () => {
                 </div>
                 <div className="detail-item">
                   <strong>Telefon:</strong>
-                  <p><a href="tel:+4312345678">+43 1 234 5678</a></p>
+                  <p><a href="tel:+49 155 65236794">+49 155 65236794</a></p>
                 </div>
                 <div className="detail-item">
                   <strong>WhatsApp:</strong>

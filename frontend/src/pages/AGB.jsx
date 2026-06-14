@@ -113,7 +113,7 @@ const AGB = () => {
                     UID-Nummer: ATU12345678<br />
                     Gewerbeberechtigung: Vermögensberatung<br />
                     <br />
-                    Telefon: +43 1 234 5678<br />
+                    Telefon: +49 155 65236794<br />
                     E-Mail: info@finanzplus.at<br />
                     Website: www.finanzplus.at
                   </div>
@@ -509,7 +509,7 @@ const AGB = () => {
                   <Link to="/kontakt" className="btn btn-primary">
                     💬 Kontakt aufnehmen
                   </Link>
-                  <a href="tel:+4312345678" className="btn btn-secondary">
+                  <a href="tel:+49 155 65236794" className="btn btn-secondary">
                     📞 Anrufen
                   </a>
                 </div>

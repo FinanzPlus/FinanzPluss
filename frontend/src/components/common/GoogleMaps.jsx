@@ -24,7 +24,7 @@ const GoogleMaps = ({
     lng: lng,
     address: address,
     name: "FinanzPlus Austria GmbH",
-    phone: "+43 123 456 789",
+    phone: "+49 155 65236794",
     email: "kontakt@finanzplus.at"
   };
 

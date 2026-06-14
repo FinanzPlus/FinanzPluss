@@ -30,7 +30,7 @@ const WhatsAppButton = () => {
   }, [isVisible]);
 
   const handleClick = () => {
-    const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '436641234567';
+    const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '4915565236794';
     const message = encodeURIComponent('Hallo! Ich interessiere mich für einen Kredit und möchte mehr Informationen erhalten.');
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
