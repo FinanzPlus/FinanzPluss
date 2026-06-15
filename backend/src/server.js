@@ -75,6 +75,91 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Route de test EMAIL simple (GET)
+app.get('/api/test-email-simple', async (req, res) => {
+  console.log('\n🧪 ========================================');
+  console.log('🧪 [TEST EMAIL SIMPLE] Endpoint appelé');
+  console.log('🧪 ========================================');
+  
+  try {
+    // Importer Resend
+    const { Resend } = require('resend');
+    
+    // Vérifier les variables d'environnement
+    console.log('🧪 [TEST] RESEND_API_KEY présente:', !!process.env.RESEND_API_KEY);
+    console.log('🧪 [TEST] EMAIL_FROM:', process.env.EMAIL_FROM || 'noreply@finanzplus.xyz');
+    
+    if (!process.env.RESEND_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        error: 'RESEND_API_KEY manquante',
+        config: {
+          RESEND_API_KEY: 'MANQUANTE',
+          EMAIL_FROM: process.env.EMAIL_FROM || 'non définie'
+        }
+      });
+    }
+    
+    // Initialiser Resend
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const emailFrom = process.env.EMAIL_FROM || 'noreply@finanzplus.xyz';
+    
+    console.log('🧪 [TEST] Envoi email de test...');
+    console.log('🧪 [TEST] FROM:', emailFrom);
+    console.log('🧪 [TEST] TO: test@resend.dev');
+    
+    // Envoyer un email de test
+    const { data, error } = await resend.emails.send({
+      from: emailFrom,
+      to: ['delivered@resend.dev'], // Email de test Resend
+      subject: 'Test Email - FinanzPlus Austria',
+      html: '<h1>✅ Test réussi!</h1><p>Si vous voyez ce message, Resend fonctionne correctement.</p>'
+    });
+    
+    if (error) {
+      console.error('❌ [TEST] ERREUR Resend:', error);
+      return res.status(500).json({
+        success: false,
+        error: error.message || error,
+        details: error,
+        config: {
+          RESEND_API_KEY: process.env.RESEND_API_KEY ? 'Présente' : 'Manquante',
+          EMAIL_FROM: emailFrom
+        }
+      });
+    }
+    
+    console.log('✅ [TEST] Email envoyé avec succès!');
+    console.log('✅ [TEST] ID:', data.id);
+    console.log('🧪 ========================================\n');
+    
+    res.status(200).json({
+      success: true,
+      message: 'Email de test envoyé avec succès!',
+      messageId: data.id,
+      config: {
+        RESEND_API_KEY: 'Présente',
+        EMAIL_FROM: emailFrom
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ [TEST] ERREUR CRITIQUE:', error);
+    console.error('❌ [TEST] Message:', error.message);
+    console.error('❌ [TEST] Stack:', error.stack);
+    
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: error.stack,
+      config: {
+        RESEND_API_KEY: process.env.RESEND_API_KEY ? 'Présente' : 'Manquante',
+        EMAIL_FROM: process.env.EMAIL_FROM || 'non définie'
+      }
+    });
+  }
+});
+
 // Routes API - FinanzPlus Austria
 // Authentication
 app.use('/api/auth', require('./routes/auth'));
