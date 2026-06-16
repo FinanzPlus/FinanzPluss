@@ -144,13 +144,13 @@ const Home = () => {
               Schnell, sicher und kostenlos.
             </p>
             <div className="hero-buttons animate-fade-in-up">
-              <button 
+              <button
                 onClick={() => navigate('/kreditrechner')}
                 className="btn btn-primary btn-lg"
               >
-                🧮 Kreditrechner starten
+                🧮 Kreditantrag stellen
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/uber-uns')}
                 className="btn btn-secondary btn-lg"
               >
@@ -279,12 +279,12 @@ const Home = () => {
                   />
                   <div className="range-value">60 Monate</div>
                 </div>
-                <button 
+                <button
                   onClick={() => navigate('/kreditrechner')}
                   className="btn btn-primary btn-lg"
                   style={{ width: '100%' }}
                 >
-                  Detaillierte Berechnung starten
+                  Kreditantrag stellen
                 </button>
               </div>
               <div className="calculator-result">
@@ -405,13 +405,13 @@ const Home = () => {
               Starten Sie jetzt und erhalten Sie Ihr persönliches Angebot in 24 Stunden
             </p>
             <div className="cta-buttons">
-              <button 
+              <button
                 onClick={() => navigate('/kreditrechner')}
                 className="btn btn-primary btn-lg"
               >
-                🧮 Jetzt berechnen
+                🧮 Kreditantrag stellen
               </button>
-              <a 
+              <a
                 href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=Hallo, ich interessiere mich für einen Kredit.`}
                 target="_blank"
                 rel="noopener noreferrer"
