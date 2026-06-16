@@ -626,5 +626,10 @@ a:hover {
 /* ============================================
    Made with ❤️ by Bob for FinanzPlus Austria
    ============================================ */
+/* ============================================
+   12. IMPORT - OPTIMISATIONS MOBILE
+   ============================================ */
+@import url('./mobile-optimizations.css');
+
 
 /* Made with Bob */
