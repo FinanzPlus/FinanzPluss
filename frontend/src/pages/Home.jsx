@@ -2,6 +2,125 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Home.css';
 
+// Composant Calculateur Rapide avec saisie directe
+const QuickCalculator = ({ navigate }) => {
+  const [amount, setAmount] = useState(25000);
+  const [duration, setDuration] = useState(60);
+  const [monthlyPayment, setMonthlyPayment] = useState(0);
+
+  // Calcul de la mensualité
+  useEffect(() => {
+    const interestRate = 0.035; // 3.5% taux d'intérêt annuel
+    const monthlyRate = interestRate / 12;
+    const numPayments = duration;
+    
+    if (amount > 0 && duration > 0) {
+      // Formule de calcul de mensualité : M = P * [r(1+r)^n] / [(1+r)^n - 1]
+      const payment = amount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+                     (Math.pow(1 + monthlyRate, numPayments) - 1);
+      setMonthlyPayment(Math.round(payment));
+    }
+  }, [amount, duration]);
+
+  const handleAmountChange = (e) => {
+    const value = parseInt(e.target.value.replace(/\D/g, '')) || 0;
+    if (value >= 1000 && value <= 100000) {
+      setAmount(value);
+    }
+  };
+
+  const handleDurationChange = (e) => {
+    const value = parseInt(e.target.value) || 0;
+    if (value >= 12 && value <= 120) {
+      setDuration(value);
+    }
+  };
+
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('de-AT').format(num);
+  };
+
+  return (
+    <section className="quick-calculator-section section">
+      <div className="container">
+        <div className="calculator-card">
+          <div className="calculator-header">
+            <h2 className="calculator-title">Schnellrechner</h2>
+            <p className="calculator-subtitle">
+              Geben Sie Ihren Wunschbetrag und die Laufzeit ein
+            </p>
+          </div>
+          <div className="calculator-body">
+            <div className="calculator-form">
+              <div className="form-group">
+                <label htmlFor="amount">Kreditbetrag (€)</label>
+                <div className="input-wrapper">
+                  <input
+                    id="amount"
+                    type="text"
+                    value={formatNumber(amount)}
+                    onChange={handleAmountChange}
+                    className="calculator-input"
+                    placeholder="z.B. 25.000"
+                  />
+                  <span className="input-suffix">€</span>
+                </div>
+                <small className="input-hint">Zwischen 1.000 € und 100.000 €</small>
+              </div>
+              <div className="form-group">
+                <label htmlFor="duration">Laufzeit (Monate)</label>
+                <div className="input-wrapper">
+                  <input
+                    id="duration"
+                    type="number"
+                    min="12"
+                    max="120"
+                    step="12"
+                    value={duration}
+                    onChange={handleDurationChange}
+                    className="calculator-input"
+                    placeholder="z.B. 60"
+                  />
+                  <span className="input-suffix">Monate</span>
+                </div>
+                <small className="input-hint">Zwischen 12 und 120 Monaten</small>
+              </div>
+              <button
+                onClick={() => navigate('/kreditrechner')}
+                className="btn btn-primary btn-lg"
+                style={{ width: '100%' }}
+              >
+                Kreditantrag stellen
+              </button>
+            </div>
+            <div className="calculator-result">
+              <div className="result-label">Geschätzte monatliche Rate</div>
+              <div className="result-amount">~{formatNumber(monthlyPayment)} €</div>
+              <div className="result-note">
+                * Beispielrechnung bei 3,5% Zinssatz
+              </div>
+              <div className="result-details">
+                <div className="result-detail-item">
+                  <span>Kreditbetrag:</span>
+                  <strong>{formatNumber(amount)} €</strong>
+                </div>
+                <div className="result-detail-item">
+                  <span>Laufzeit:</span>
+                  <strong>{duration} Monate ({Math.round(duration/12)} Jahre)</strong>
+                </div>
+                <div className="result-detail-item">
+                  <span>Gesamtbetrag:</span>
+                  <strong>{formatNumber(monthlyPayment * duration)} €</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Home = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
@@ -244,60 +363,7 @@ const Home = () => {
       </section>
 
       {/* 5. SIMULATEUR RAPIDE INTÉGRÉ */}
-      <section className="quick-calculator-section section">
-        <div className="container">
-          <div className="calculator-card">
-            <div className="calculator-header">
-              <h2 className="calculator-title">Schnellrechner</h2>
-              <p className="calculator-subtitle">
-                Berechnen Sie Ihre monatliche Rate in Sekunden
-              </p>
-            </div>
-            <div className="calculator-body">
-              <div className="calculator-form">
-                <div className="form-group">
-                  <label>Kreditbetrag</label>
-                  <input 
-                    type="range" 
-                    min="1000" 
-                    max="100000" 
-                    step="1000" 
-                    defaultValue="25000"
-                    className="range-input"
-                  />
-                  <div className="range-value">25.000 €</div>
-                </div>
-                <div className="form-group">
-                  <label>Laufzeit</label>
-                  <input 
-                    type="range" 
-                    min="12" 
-                    max="120" 
-                    step="12" 
-                    defaultValue="60"
-                    className="range-input"
-                  />
-                  <div className="range-value">60 Monate</div>
-                </div>
-                <button
-                  onClick={() => navigate('/kreditrechner')}
-                  className="btn btn-primary btn-lg"
-                  style={{ width: '100%' }}
-                >
-                  Kreditantrag stellen
-                </button>
-              </div>
-              <div className="calculator-result">
-                <div className="result-label">Geschätzte monatliche Rate</div>
-                <div className="result-amount">~450 €</div>
-                <div className="result-note">
-                  * Beispielrechnung bei 3,5% Zinssatz
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <QuickCalculator navigate={navigate} />
 
       {/* 6. PARTENAIRES BANCAIRES DÉTAILLÉS */}
       <section className="partners-section section bg-off-white">
