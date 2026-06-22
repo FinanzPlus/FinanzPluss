@@ -19,21 +19,19 @@ const QuickCalculator = ({ navigate }) => {
       const payment = amount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
                      (Math.pow(1 + monthlyRate, numPayments) - 1);
       setMonthlyPayment(Math.round(payment));
+    } else {
+      setMonthlyPayment(0);
     }
   }, [amount, duration]);
 
   const handleAmountChange = (e) => {
     const value = parseInt(e.target.value.replace(/\D/g, '')) || 0;
-    if (value >= 1000 && value <= 100000) {
-      setAmount(value);
-    }
+    setAmount(value);
   };
 
   const handleDurationChange = (e) => {
     const value = parseInt(e.target.value) || 0;
-    if (value >= 12 && value <= 120) {
-      setDuration(value);
-    }
+    setDuration(value);
   };
 
   const formatNumber = (num) => {
@@ -65,7 +63,6 @@ const QuickCalculator = ({ navigate }) => {
                   />
                   <span className="input-suffix">€</span>
                 </div>
-                <small className="input-hint">Zwischen 1.000 € und 100.000 €</small>
               </div>
               <div className="form-group">
                 <label htmlFor="duration">Laufzeit (Monate)</label>
@@ -73,9 +70,6 @@ const QuickCalculator = ({ navigate }) => {
                   <input
                     id="duration"
                     type="number"
-                    min="12"
-                    max="120"
-                    step="12"
                     value={duration}
                     onChange={handleDurationChange}
                     className="calculator-input"
@@ -83,7 +77,6 @@ const QuickCalculator = ({ navigate }) => {
                   />
                   <span className="input-suffix">Monate</span>
                 </div>
-                <small className="input-hint">Zwischen 12 und 120 Monaten</small>
               </div>
               <button
                 onClick={() => navigate('/kreditrechner')}
