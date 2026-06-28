@@ -241,16 +241,53 @@ const LoanSimulator = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Navigation entre étapes
+  // Navigation entre étapes avec validation complète
   const goToNextStep = () => {
+
+    // Étape 1 : montant et durée obligatoires
     if (currentStep === 1) {
       const amount = parseFloat(amountInput);
       const duration = parseInt(durationInput);
-      if (!amount || amount <= 0 || !duration || duration <= 0) {
-        alert('Bitte geben Sie einen gültigen Betrag und eine gültige Laufzeit ein.');
+      if (!amountInput || !durationInput) {
+        alert('Bitte füllen Sie Betrag und Laufzeit aus.');
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        alert('Bitte geben Sie einen gültigen Kreditbetrag ein (z.B. 25000).');
+        return;
+      }
+      if (isNaN(duration) || duration <= 0) {
+        alert('Bitte geben Sie eine gültige Laufzeit in Monaten ein (z.B. 60).');
         return;
       }
     }
+
+    // Étape 2 : prénom, nom, email, téléphone obligatoires
+    if (currentStep === 2) {
+      const { firstName, lastName, email, phone } = formData;
+      if (!firstName.trim()) {
+        alert('Bitte geben Sie Ihren Vornamen ein.');
+        return;
+      }
+      if (!lastName.trim()) {
+        alert('Bitte geben Sie Ihren Nachnamen ein.');
+        return;
+      }
+      if (!email.trim()) {
+        alert('Bitte geben Sie Ihre E-Mail-Adresse ein.');
+        return;
+      }
+      // Validation format email basique
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        return;
+      }
+      if (!phone.trim()) {
+        alert('Bitte geben Sie Ihre Telefonnummer ein.');
+        return;
+      }
+    }
+
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
