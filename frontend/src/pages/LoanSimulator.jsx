@@ -17,10 +17,14 @@ const LoanSimulator = () => {
     { value: 'other', label: 'Sonstiges' }
   ];
 
-  // États du formulaire
+  // Valeurs saisies (strings pour permettre champ vide)
+  const [amountInput, setAmountInput] = useState('');
+  const [durationInput, setDurationInput] = useState('');
+
+  // Autres données du formulaire
   const [formData, setFormData] = useState({
-    amount: 25000,
-    duration: 60,
+    amount: 0,
+    duration: 0,
     purpose: 'personal',
     firstName: '',
     lastName: '',
@@ -33,49 +37,43 @@ const LoanSimulator = () => {
   const [amortizationTable, setAmortizationTable] = useState([]);
   const [showTable, setShowTable] = useState(false);
 
-  // Calcul automatique quand les paramètres changent
+  // Recalcul automatique dès que montant ou durée change
   useEffect(() => {
-    calculateLoan();
-  }, [formData.amount, formData.duration]);
+    const amount = parseFloat(amountInput);
+    const duration = parseInt(durationInput);
+    if (amount > 0 && duration > 0) {
+      setFormData(prev => ({ ...prev, amount, duration }));
+      computeLoan(amount, duration);
+    } else {
+      setResults(null);
+      setAmortizationTable([]);
+    }
+  }, [amountInput, durationInput]);
 
-  // Gestion des changements de formulaire
+  // Gestion des changements texte (nom, email, tel, objet)
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: name === 'amount' || name === 'duration' ? parseFloat(value) || 0 : value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   // Calcul du prêt avec taux fixe 2.8%
   // M = (Capital × 0,028/12) / (1 - (1 + 0,028/12)^-Durée)
-  const calculateLoan = () => {
-    const { amount, duration } = formData;
+  const computeLoan = (amount, duration) => {
     const monthlyRate = FIXED_RATE / 100 / 12;
-    const numberOfPayments = duration;
 
-    let monthlyPayment;
-    if (monthlyRate === 0) {
-      monthlyPayment = amount / numberOfPayments;
-    } else {
-      monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
-    }
-
-    const totalAmount = monthlyPayment * numberOfPayments;
+    const monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -duration));
+    const totalAmount = monthlyPayment * duration;
     const totalInterest = totalAmount - amount;
 
     // Tableau d'amortissement
     const table = [];
     let remainingBalance = amount;
 
-    for (let month = 1; month <= numberOfPayments; month++) {
+    for (let month = 1; month <= duration; month++) {
       const interestPayment = remainingBalance * monthlyRate;
       const principalPayment = monthlyPayment - interestPayment;
       remainingBalance -= principalPayment;
-
-      if (month === numberOfPayments) {
-        remainingBalance = 0;
-      }
+      if (month === duration) remainingBalance = 0;
 
       table.push({
         month,
@@ -94,6 +92,13 @@ const LoanSimulator = () => {
     });
 
     setAmortizationTable(table);
+  };
+
+  // Alias pour garder la compatibilité avec exportToPDF
+  const calculateLoan = () => {
+    const amount = parseFloat(amountInput);
+    const duration = parseInt(durationInput);
+    if (amount > 0 && duration > 0) computeLoan(amount, duration);
   };
 
   // Export PDF
@@ -238,9 +243,13 @@ const LoanSimulator = () => {
 
   // Navigation entre étapes
   const goToNextStep = () => {
-    if (currentStep === 1 && (!formData.amount || !formData.duration)) {
-      alert('Bitte geben Sie Betrag und Laufzeit ein.');
-      return;
+    if (currentStep === 1) {
+      const amount = parseFloat(amountInput);
+      const duration = parseInt(durationInput);
+      if (!amount || amount <= 0 || !duration || duration <= 0) {
+        alert('Bitte geben Sie einen gültigen Betrag und eine gültige Laufzeit ein.');
+        return;
+      }
     }
     if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
@@ -310,12 +319,11 @@ const LoanSimulator = () => {
                         type="number"
                         id="amount"
                         name="amount"
-                        min={1000}
-                        max={500000}
-                        value={formData.amount}
-                        onChange={handleInputChange}
+                        value={amountInput}
+                        onChange={(e) => setAmountInput(e.target.value)}
                         className="text-input"
                         placeholder="z.B. 25000"
+                        min="1"
                       />
                       <span className="input-suffix">€</span>
                     </div>
@@ -328,11 +336,11 @@ const LoanSimulator = () => {
                         type="number"
                         id="duration"
                         name="duration"
-                        min={1}
-                        value={formData.duration}
-                        onChange={handleInputChange}
+                        value={durationInput}
+                        onChange={(e) => setDurationInput(e.target.value)}
                         className="text-input"
                         placeholder="z.B. 60"
+                        min="1"
                       />
                       <span className="input-suffix">Monate</span>
                     </div>
