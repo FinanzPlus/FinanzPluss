@@ -1011,3 +1011,29 @@
   margin-top: 0.5rem;
 }
 
+
+/* États succès / erreur email */
+.contact-choice-card.card-success {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.contact-choice-icon.icon-success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-success-text {
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.status-error-text {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-align: center;
+}
+

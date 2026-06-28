@@ -241,34 +241,45 @@ const LoanSimulator = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-  // Envoi par email (ouverture du client mail avec pré-remplissage)
-  const handleEmailSubmit = () => {
+  // État de l'envoi email
+  const [emailStatus, setEmailStatus] = useState('idle'); // idle | sending | sent | error
+
+  // Envoi email via le backend (Resend) → arrive directement dans la boîte
+  const handleEmailSubmit = async () => {
     const purposeLabel = loanPurposes.find(p => p.value === formData.purpose)?.label || formData.purpose;
 
-    const subject = encodeURIComponent(`Kreditanfrage – ${formData.firstName} ${formData.lastName}`);
-    const body = encodeURIComponent(
-`Guten Tag FinanzPlus Austria Team,
+    setEmailStatus('sending');
 
-ich möchte einen Kredit beantragen:
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL ||
+                     window.location.origin.replace('finanzplus-frontend', 'finanzplus-backend').replace(':3000', ':5000') ||
+                     'https://finanzplus-backend.up.railway.app';
 
-👤 Name: ${formData.firstName} ${formData.lastName}
-📧 E-Mail: ${formData.email}
-📞 Telefon: ${formData.phone}
+      const response = await fetch(`${apiUrl}/api/loans/applications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          amount: formData.amount,
+          duration: formData.duration,
+          purpose: purposeLabel,
+          interestRate: FIXED_RATE,
+          monthlyPayment: parseFloat(results?.monthlyPayment),
+          totalAmount: parseFloat(results?.totalAmount)
+        })
+      });
 
-💰 Kreditbetrag: €${formData.amount.toLocaleString('de-AT')}
-📅 Laufzeit: ${formData.duration} Monate
-🎯 Verwendungszweck: ${purposeLabel}
-📊 Zinssatz: 2,8% fest
-💶 Monatliche Rate: €${results?.monthlyPayment}
-💳 Gesamtbetrag: €${results?.totalAmount}
-
-Ich bitte um Rückmeldung.
-
-Mit freundlichen Grüßen,
-${formData.firstName} ${formData.lastName}`
-    );
-
-    window.location.href = `mailto:Kontakt_finanzplusaustria@proton.me?subject=${subject}&body=${body}`;
+      if (response.ok) {
+        setEmailStatus('sent');
+      } else {
+        throw new Error('API Fehler');
+      }
+    } catch (error) {
+      setEmailStatus('error');
+    }
   };
 
   // Navigation entre étapes avec validation complète
@@ -717,21 +728,47 @@ ${formData.firstName} ${formData.lastName}`
                   </div>
 
                   {/* Option Email */}
-                  <div className="contact-choice-card">
-                    <div className="contact-choice-icon email-icon">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                      </svg>
+                  <div className={`contact-choice-card ${emailStatus === 'sent' ? 'card-success' : ''}`}>
+                    <div className={`contact-choice-icon email-icon ${emailStatus === 'sent' ? 'icon-success' : ''}`}>
+                      {emailStatus === 'sent' ? (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      ) : (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                          <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                      )}
                     </div>
                     <h4>E-Mail</h4>
-                    <p>Ausführliche Anfrage – wir antworten innerhalb von 24 Stunden</p>
-                    <button
-                      className="btn btn-primary btn-lg contact-choice-btn"
-                      onClick={handleEmailSubmit}
-                    >
-                      ✉️ Per E-Mail senden
-                    </button>
+
+                    {emailStatus === 'sent' ? (
+                      <>
+                        <p className="status-success-text">✅ Anfrage erfolgreich gesendet!<br />Wir melden uns bald bei Ihnen.</p>
+                      </>
+                    ) : emailStatus === 'error' ? (
+                      <>
+                        <p className="status-error-text">❌ Fehler beim Senden. Bitte versuchen Sie es erneut.</p>
+                        <button
+                          className="btn btn-primary btn-lg contact-choice-btn"
+                          onClick={handleEmailSubmit}
+                        >
+                          🔄 Erneut versuchen
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <p>Ihre Anfrage wird direkt an unser Team gesendet – Antwort innerhalb von 24 Stunden</p>
+                        <button
+                          className="btn btn-primary btn-lg contact-choice-btn"
+                          onClick={handleEmailSubmit}
+                          disabled={emailStatus === 'sending'}
+                        >
+                          {emailStatus === 'sending' ? '⏳ Wird gesendet...' : '✉️ Per E-Mail senden'}
+                        </button>
+                      </>
+                    )}
                   </div>
 
                 </div>
