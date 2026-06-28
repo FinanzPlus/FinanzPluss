@@ -8,7 +8,7 @@ export const translations = {
   nav: {
     home: 'Startseite',
     about: 'Über uns',
-    partners: 'Partner',
+    kreditrechner: 'Kreditrechner',
     simulator: 'Kreditrechner',
     comparator: 'Kreditvergleich',
     reviews: 'Bewertungen',
@@ -345,12 +345,12 @@ export const translations = {
     beFirst: 'Seien Sie der Erste, der bewertet!'
   },
 
-  // Partners
-  partners: {
-    title: 'Unsere Partner',
-    banks: 'Partnerbanken',
-    total: 'Partner insgesamt',
-    viewAll: 'Alle Partner ansehen',
+  // Kreditrechner
+  kreditrechner: {
+    title: 'Kreditrechner',
+    fixedRate: 'Zinssatz: 2,8% fest',
+    total: 'Gesamtbetrag',
+    viewAll: 'Kreditantrag stellen',
     details: 'Details',
     website: 'Webseite',
     contact: 'Kontakt',
@@ -460,7 +460,7 @@ export const translations = {
     loans: 'Kredite',
     calculator: 'Rechner',
     comparator: 'Vergleich',
-    partners: 'Partner',
+    kreditrechner: 'Kreditrechner',
     support: 'Support',
     help: 'Hilfe',
     faq: 'FAQ',

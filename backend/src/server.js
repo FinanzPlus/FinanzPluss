@@ -166,7 +166,6 @@ app.use('/api/auth', require('./routes/auth'));
 
 // Financial Services
 app.use('/api/loans', require('./routes/loans'));
-app.use('/api/partners', require('./routes/partners'));
 app.use('/api/documents', require('./routes/documents'));
 app.use('/api/credit-score', require('./routes/creditScore'));
 

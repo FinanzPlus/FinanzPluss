@@ -26,7 +26,7 @@ const About = () => {
       name: 'Thomas Müller',
       role: 'Leiter Partnerschaften',
       image: '/assets/team/thomas.jpg',
-      bio: 'Verantwortlich für strategische Bankpartnerschaften und Produktentwicklung',
+      bio: 'Verantwortlich für strategische Partnerschaften und Produktentwicklung',
       linkedin: 'https://linkedin.com/in/thomas-mueller'
     },
     {
@@ -109,8 +109,8 @@ const About = () => {
     },
     {
       year: '2017',
-      title: 'Erste Partnerschaften',
-      description: 'Kooperationen mit Erste Bank und Raiffeisen etabliert'
+      title: 'Erste Erfolge',
+      description: 'Erste Kreditvermittlungen erfolgreich abgeschlossen'
     },
     {
       year: '2019',
@@ -125,7 +125,7 @@ const About = () => {
     {
       year: '2023',
       title: 'Expansion',
-      description: 'Erweiterung auf 6 Bankpartner und neue Produktlinien'
+      description: 'Erweiterung des Angebots und neue Produktlinien'
     },
     {
       year: '2024',
@@ -338,44 +338,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Partners Section */}
-      <section className="about-partners-section">
-        <div className="container">
-          <h2>Unsere Bankpartner</h2>
-          <p className="section-subtitle">
-            Zusammenarbeit mit den führenden Banken Österreichs
-          </p>
-          <div className="partners-logos">
-            <div className="partner-logo-item">
-              <div className="logo-placeholder">Erste Bank</div>
-            </div>
-            <div className="partner-logo-item">
-              <div className="logo-placeholder">Raiffeisen</div>
-            </div>
-            <div className="partner-logo-item">
-              <div className="logo-placeholder">Bank Austria</div>
-            </div>
-            <div className="partner-logo-item">
-              <div className="logo-placeholder">BAWAG P.S.K.</div>
-            </div>
-            <div className="partner-logo-item">
-              <div className="logo-placeholder">Volksbank</div>
-            </div>
-            <div className="partner-logo-item">
-              <div className="logo-placeholder">Sparkasse</div>
-            </div>
-          </div>
-          <div className="partners-cta">
-            <Button
-              variant="outline"
-              size="large"
-              onClick={() => navigate('/partner')}
-            >
-              Alle Partner ansehen
-            </Button>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="about-cta">

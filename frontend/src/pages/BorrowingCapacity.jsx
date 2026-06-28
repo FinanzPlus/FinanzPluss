@@ -34,8 +34,8 @@ const BorrowingCapacity = () => {
     const dependentAdjustment = 1 - (dependents * 0.05);
     const adjustedMaxPayment = maxMonthlyPayment * dependentAdjustment;
 
-    // Calculate maximum loan amount (assuming 4% interest, 20 years)
-    const interestRate = 0.04 / 12;
+    // Calculate maximum loan amount at fixed rate 2.8%
+    const interestRate = 0.028 / 12;
     const months = 240;
     const maxLoanAmount = adjustedMaxPayment * ((Math.pow(1 + interestRate, months) - 1) / (interestRate * Math.pow(1 + interestRate, months)));
 

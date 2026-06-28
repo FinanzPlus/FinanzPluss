@@ -112,7 +112,7 @@ class LoanCalculator {
    * @param {number} annualRate - Taux d'intérêt annuel (%)
    * @returns {Object} Capacité d'emprunt et détails
    */
-  static calculateBorrowingCapacity(monthlyIncome, monthlyExpenses, months, annualRate = 3) {
+  static calculateBorrowingCapacity(monthlyIncome, monthlyExpenses, months, annualRate = 2.8) {
     // Revenus disponibles
     const availableIncome = monthlyIncome - monthlyExpenses;
     

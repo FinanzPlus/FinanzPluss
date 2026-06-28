@@ -125,7 +125,7 @@ const AGB = () => {
                 <div className="legal-text">
                   <h3>3.1 Kreditvermittlung</h3>
                   <p>
-                    FinanzPlus vermittelt Kredite zwischen Kunden und Partnerbanken. Wir sind kein 
+                    FinanzPlus vermittelt Kredite für Kunden. Wir sind kein 
                     Kreditgeber, sondern ein unabhängiger Vermittler. Der Kreditvertrag kommt direkt 
                     zwischen Ihnen und der jeweiligen Bank zustande.
                   </p>
@@ -134,7 +134,7 @@ const AGB = () => {
                   <p>
                     Wir bieten einen kostenlosen Kreditvergleich an, der Ihnen hilft, das beste 
                     Kreditangebot für Ihre Bedürfnisse zu finden. Die Vergleichsergebnisse basieren 
-                    auf den von Ihnen angegebenen Daten und den aktuellen Konditionen unserer Partnerbanken.
+                    auf den von Ihnen angegebenen Daten und unserem festen Zinssatz von 2,8%.
                   </p>
 
                   <h3>3.3 Beratungsleistungen</h3>
@@ -153,7 +153,7 @@ const AGB = () => {
                   <div className="legal-warning-box">
                     <strong>⚠️ Wichtig:</strong> FinanzPlus ist nicht berechtigt, Kredite zu vergeben 
                     oder Kreditentscheidungen zu treffen. Diese Entscheidungen liegen ausschließlich 
-                    bei den Partnerbanken.
+                    durch unsere Berater.
                   </div>
                 </div>
               </div>
@@ -173,7 +173,7 @@ const AGB = () => {
                   <ol>
                     <li>Sie füllen das Online-Formular mit Ihren Daten aus</li>
                     <li>Sie erhalten eine Bestätigung Ihrer Anfrage per E-Mail</li>
-                    <li>Wir prüfen Ihre Anfrage und leiten sie an geeignete Partnerbanken weiter</li>
+                    <li>Wir prüfen Ihre Anfrage und leiten sie an unsere Berater weiter</li>
                     <li>Sie erhalten Kreditangebote von den Banken</li>
                     <li>Sie entscheiden sich für ein Angebot und schließen den Vertrag direkt mit der Bank</li>
                   </ol>
@@ -282,8 +282,8 @@ const AGB = () => {
 
                   <h3>7.2 Keine Haftung für Kreditentscheidungen</h3>
                   <p>
-                    FinanzPlus haftet nicht für die Kreditentscheidungen der Partnerbanken. Die 
-                    Entscheidung über die Kreditvergabe liegt ausschließlich bei der jeweiligen Bank.
+                    FinanzPlus haftet nicht für die finale Kreditentscheidung.
+                    Die Entscheidung über die Kreditvergabe liegt bei den zuständigen Beratern.
                   </p>
 
                   <h3>7.3 Keine Haftung für Drittinhalte</h3>
@@ -324,9 +324,9 @@ const AGB = () => {
                     gestellt haben.
                   </p>
 
-                  <h3>8.2 Weitergabe an Partnerbanken</h3>
+                  <h3>8.2 Datenweitergabe</h3>
                   <p>
-                    Für die Kreditvermittlung ist es erforderlich, Ihre Daten an unsere Partnerbanken 
+                    Für die Kreditvermittlung ist es erforderlich, Ihre Daten an unsere Berater
                     weiterzugeben. Dies erfolgt nur mit Ihrer ausdrücklichen Einwilligung.
                   </p>
                 </div>

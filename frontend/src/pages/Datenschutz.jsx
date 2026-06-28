@@ -120,7 +120,7 @@ const Datenschutz = () => {
                     <div className="legal-purpose-card">
                       <div className="legal-purpose-icon">🔍</div>
                       <h4>Kreditvermittlung</h4>
-                      <p>Bearbeitung und Weiterleitung Ihrer Kreditanfragen an unsere Partnerbanken</p>
+                      <p>Bearbeitung und Weiterleitung Ihrer Kreditanfragen an unsere Berater</p>
                     </div>
                     <div className="legal-purpose-card">
                       <div className="legal-purpose-icon">📞</div>
@@ -197,11 +197,10 @@ const Datenschutz = () => {
                 <div className="legal-text">
                   <p>Wir geben Ihre Daten nur in folgenden Fällen an Dritte weiter:</p>
                   
-                  <h3>6.1 Partnerbanken</h3>
+                  <h3>6.1 Kreditvermittlung</h3>
                   <p>
-                    Für die Bearbeitung Ihrer Kreditanfrage übermitteln wir Ihre Daten an unsere 
-                    Partnerbanken (Erste Bank, Raiffeisen, Bank Austria, BAWAG P.S.K., Volksbank). 
-                    Diese sind ebenfalls zur Einhaltung der DSGVO verpflichtet.
+                    Für die Bearbeitung Ihrer Kreditanfrage werden Ihre Daten vertraulich behandelt.
+                    Unsere Berater unterliegen der DSGVO-Verpflichtung.
                   </p>
 
                   <h3>6.2 Dienstleister</h3>

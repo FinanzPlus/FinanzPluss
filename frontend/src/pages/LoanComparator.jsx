@@ -1,109 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BankLogo from '../components/common/BankLogo';
 import FinancialDisclaimer from '../components/common/FinancialDisclaimer';
-import { compareOffers, formatCurrency } from '../services/loanService';
 import './LoanComparator.css';
 
 /**
- * LOAN COMPARATOR - Comparaison multi-banques
- * Compare les offres de toutes les banques partenaires
+ * LOAN COMPARATOR - Calcul avec taux fixe 2,8%
  */
 const LoanComparator = () => {
   const navigate = useNavigate();
 
-  // Données des banques
-  const banks = [
-    {
-      id: 1,
-      name: 'Erste Bank',
-      rate: 2.5,
-      specialties: ['Immobilienfinanzierung', 'Wohnkredit'],
-      minAmount: 5000,
-      maxAmount: 500000,
-      processingTime: '24h',
-      approvalRate: 92,
-      color: '#E2001A'
-    },
-    {
-      id: 2,
-      name: 'Raiffeisen Bank',
-      rate: 2.8,
-      specialties: ['Unternehmenskredite', 'Geschäftskredite'],
-      minAmount: 10000,
-      maxAmount: 1000000,
-      processingTime: '48h',
-      approvalRate: 88,
-      color: '#FFED00'
-    },
-    {
-      id: 3,
-      name: 'Bank Austria',
-      rate: 3.2,
-      specialties: ['Privatkredit', 'Konsumkredit'],
-      minAmount: 1000,
-      maxAmount: 75000,
-      processingTime: '12h',
-      approvalRate: 95,
-      color: '#E2001A'
-    },
-    {
-      id: 4,
-      name: 'BAWAG P.S.K.',
-      rate: 2.7,
-      specialties: ['Autokredit', 'Fahrzeugfinanzierung'],
-      minAmount: 3000,
-      maxAmount: 100000,
-      processingTime: '24h',
-      approvalRate: 90,
-      color: '#005CA9'
-    },
-    {
-      id: 5,
-      name: 'Volksbank',
-      rate: 2.4,
-      specialties: ['Wohnbaukredit', 'Sanierungskredit'],
-      minAmount: 10000,
-      maxAmount: 400000,
-      processingTime: '36h',
-      approvalRate: 85,
-      color: '#009640'
-    }
-  ];
+  // Taux fixe unique 2.8%
+  const FIXED_RATE = 2.8;
 
-  // États
   const [amount, setAmount] = useState(25000);
   const [duration, setDuration] = useState(60);
-  const [comparison, setComparison] = useState([]);
-  const [sortBy, setSortBy] = useState('totalAmount'); // totalAmount, rate, monthlyPayment
-  const [showDetails, setShowDetails] = useState(null);
 
-  // Calcul automatique
-  useEffect(() => {
-    const results = compareOffers(amount, duration, banks);
-    setComparison(results);
-  }, [amount, duration]);
+  // Calcul avec taux fixe 2.8%
+  const monthlyRate = FIXED_RATE / 100 / 12;
+  const monthlyPayment = amount > 0 && duration > 0
+    ? (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -duration))
+    : 0;
+  const totalAmount = monthlyPayment * duration;
+  const totalInterest = totalAmount - amount;
 
-  // Tri des résultats
-  const sortedComparison = [...comparison].sort((a, b) => {
-    switch (sortBy) {
-      case 'rate':
-        return parseFloat(a.rate) - parseFloat(b.rate);
-      case 'monthlyPayment':
-        return parseFloat(a.monthlyPayment) - parseFloat(b.monthlyPayment);
-      case 'totalAmount':
-      default:
-        return parseFloat(a.totalAmount) - parseFloat(b.totalAmount);
-    }
+  // Scénarios de durée pour comparer
+  const scenarios = [24, 36, 48, 60, 84, 120].map(months => {
+    const mRate = FIXED_RATE / 100 / 12;
+    const mPayment = (amount * mRate) / (1 - Math.pow(1 + mRate, -months));
+    const tAmount = mPayment * months;
+    return {
+      months,
+      monthlyPayment: mPayment.toFixed(2),
+      totalAmount: tAmount.toFixed(2),
+      totalInterest: (tAmount - amount).toFixed(2)
+    };
   });
 
-  // Meilleure offre
-  const bestOffer = sortedComparison[0];
-
-  // Sélectionner une banque et aller au simulateur
-  const selectBank = (bankName) => {
-    const bank = banks.find(b => b.name === bankName);
-    localStorage.setItem('preselected_bank', JSON.stringify(bank));
+  const goToSimulator = () => {
     localStorage.setItem('preselected_amount', amount);
     localStorage.setItem('preselected_duration', duration);
     navigate('/kreditrechner');
@@ -116,17 +49,17 @@ const LoanComparator = () => {
         <div className="container">
           <h1>📊 Kreditvergleich</h1>
           <p className="hero-subtitle">
-            Vergleichen Sie Angebote von 5 führenden österreichischen Banken in Echtzeit
+            Vergleichen Sie verschiedene Laufzeiten zu unserem festen Zinssatz von 2,8%
           </p>
         </div>
       </section>
 
-      {/* Formulaire de comparaison */}
+      {/* Formulaire */}
       <section className="comparator-form-section">
         <div className="container">
           <div className="comparator-form-card">
-            <h2>Vergleichsparameter</h2>
-            
+            <h2>Kreditparameter</h2>
+
             <div className="form-grid">
               <div className="form-group">
                 <label htmlFor="amount">
@@ -171,169 +104,113 @@ const LoanComparator = () => {
               </div>
             </div>
 
-            <div className="sort-controls">
-              <label>Sortieren nach:</label>
-              <div className="sort-buttons">
-                <button
-                  className={`sort-btn ${sortBy === 'totalAmount' ? 'active' : ''}`}
-                  onClick={() => setSortBy('totalAmount')}
-                >
-                  💰 Gesamtbetrag
-                </button>
-                <button
-                  className={`sort-btn ${sortBy === 'monthlyPayment' ? 'active' : ''}`}
-                  onClick={() => setSortBy('monthlyPayment')}
-                >
-                  📅 Monatliche Rate
-                </button>
-                <button
-                  className={`sort-btn ${sortBy === 'rate' ? 'active' : ''}`}
-                  onClick={() => setSortBy('rate')}
-                >
-                  📈 Zinssatz
-                </button>
-              </div>
+            {/* Affichage taux fixe */}
+            <div className="fixed-rate-banner">
+              🔒 <strong>Zinssatz: 2,8% fest</strong> – transparent und ohne Überraschungen
             </div>
           </div>
         </div>
       </section>
+
       {/* Avertissement financier obligatoire */}
       <FinancialDisclaimer variant="compact" />
 
-
-      {/* Résultats de comparaison */}
+      {/* Résultat principal */}
       <section className="comparison-results-section">
         <div className="container">
-          <h2 className="section-title">Vergleichsergebnisse</h2>
+          <h2 className="section-title">Ihre Kreditberechnung</h2>
           <p className="section-subtitle">
-            {sortedComparison.length} Angebote gefunden - Sortiert nach {
-              sortBy === 'totalAmount' ? 'Gesamtbetrag' :
-              sortBy === 'monthlyPayment' ? 'monatlicher Rate' :
-              'Zinssatz'
-            }
+            Kreditbetrag: <strong>€ {amount.toLocaleString('de-AT')}</strong> | Laufzeit: <strong>{duration} Monate</strong> | Zinssatz: <strong>2,8% fest</strong>
+          </p>
+
+          <div className="main-result-card">
+            <div className="main-result-highlight">
+              <div className="result-label">Monatliche Rate</div>
+              <div className="result-value">€ {monthlyPayment.toFixed(2)}</div>
+            </div>
+            <div className="main-result-details">
+              <div className="detail-item">
+                <span className="detail-icon">💰</span>
+                <div>
+                  <div className="detail-label">Gesamtbetrag</div>
+                  <div className="detail-value">€ {totalAmount.toFixed(2)}</div>
+                </div>
+              </div>
+              <div className="detail-item">
+                <span className="detail-icon">📈</span>
+                <div>
+                  <div className="detail-label">Gesamtzinsen</div>
+                  <div className="detail-value">€ {totalInterest.toFixed(2)}</div>
+                </div>
+              </div>
+              <div className="detail-item">
+                <span className="detail-icon">📊</span>
+                <div>
+                  <div className="detail-label">Zinssatz</div>
+                  <div className="detail-value">2,8% fest 🔒</div>
+                </div>
+              </div>
+            </div>
+            <button className="btn btn-primary btn-lg" onClick={goToSimulator}>
+              🧮 Jetzt Kreditantrag stellen
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Tableau comparatif par durée */}
+      <section className="comparison-table-section">
+        <div className="container">
+          <h2 className="section-title">Laufzeitenvergleich</h2>
+          <p className="section-subtitle">
+            Für € {amount.toLocaleString('de-AT')} bei 2,8% Festzins
           </p>
 
           <div className="comparison-grid">
-            {sortedComparison.map((offer, index) => {
-              const bank = banks.find(b => b.name === offer.bank);
-              const isBest = index === 0;
-
-              return (
-                <div
-                  key={offer.bankId}
-                  className={`comparison-card ${isBest ? 'best-offer' : ''} ${showDetails === offer.bankId ? 'expanded' : ''}`}
-                >
-                  {isBest && (
-                    <div className="best-badge">
-                      🏆 Bestes Angebot
-                    </div>
-                  )}
-
-                  <div className="comparison-card-header">
-                    <BankLogo bankName={offer.bank} size="large" />
-                    <h3 className="bank-name">{offer.bank}</h3>
-                    <div className="bank-specialties">
-                      {bank.specialties.map((spec, idx) => (
-                        <span key={idx} className="specialty-tag">{spec}</span>
-                      ))}
-                    </div>
+            {scenarios.map((sc, index) => (
+              <div
+                key={sc.months}
+                className={`comparison-card ${sc.months === duration ? 'best-offer' : ''}`}
+              >
+                {sc.months === duration && (
+                  <div className="best-badge">✓ Ihre Auswahl</div>
+                )}
+                <div className="comparison-card-header">
+                  <h3 className="bank-name">{sc.months} Monate</h3>
+                  <p style={{ color: '#57606a', fontSize: '0.875rem' }}>({(sc.months / 12).toFixed(1)} Jahre)</p>
+                </div>
+                <div className="comparison-card-body">
+                  <div className="main-result">
+                    <div className="result-label">Monatliche Rate</div>
+                    <div className="result-value">€ {sc.monthlyPayment}</div>
                   </div>
-
-                  <div className="comparison-card-body">
-                    {/* Mensualité */}
-                    <div className="main-result">
-                      <div className="result-label">Monatliche Rate</div>
-                      <div className="result-value">€ {offer.monthlyPayment}</div>
-                    </div>
-
-                    {/* Détails */}
-                    <div className="details-grid">
-                      <div className="detail-item">
-                        <span className="detail-icon">📊</span>
-                        <div>
-                          <div className="detail-label">Zinssatz</div>
-                          <div className="detail-value">{offer.rate}% p.a.</div>
-                        </div>
-                      </div>
-
-                      <div className="detail-item">
-                        <span className="detail-icon">💰</span>
-                        <div>
-                          <div className="detail-label">Gesamtbetrag</div>
-                          <div className="detail-value">€ {offer.totalAmount}</div>
-                        </div>
-                      </div>
-
-                      <div className="detail-item">
-                        <span className="detail-icon">📈</span>
-                        <div>
-                          <div className="detail-label">Gesamtzinsen</div>
-                          <div className="detail-value">€ {offer.totalInterest}</div>
-                        </div>
-                      </div>
-
-                      <div className="detail-item">
-                        <span className="detail-icon">⏱️</span>
-                        <div>
-                          <div className="detail-label">Bearbeitungszeit</div>
-                          <div className="detail-value">{bank.processingTime}</div>
-                        </div>
+                  <div className="details-grid">
+                    <div className="detail-item">
+                      <span className="detail-icon">💰</span>
+                      <div>
+                        <div className="detail-label">Gesamtbetrag</div>
+                        <div className="detail-value">€ {sc.totalAmount}</div>
                       </div>
                     </div>
-
-                    {/* Économies */}
-                    {index > 0 && parseFloat(offer.savings) > 0 && (
-                      <div className="savings-info">
-                        <span className="savings-icon">💸</span>
-                        <span>
-                          Sie zahlen <strong>€ {offer.savings}</strong> mehr als beim besten Angebot
-                        </span>
+                    <div className="detail-item">
+                      <span className="detail-icon">📈</span>
+                      <div>
+                        <div className="detail-label">Zinsen gesamt</div>
+                        <div className="detail-value">€ {sc.totalInterest}</div>
                       </div>
-                    )}
-
-                    {isBest && (
-                      <div className="best-info">
-                        <span className="best-icon">✓</span>
-                        <span>Günstigstes Angebot - Sparen Sie bis zu € {sortedComparison[sortedComparison.length - 1]?.savings || 0}</span>
-                      </div>
-                    )}
-
-                    {/* Détails supplémentaires */}
-                    {showDetails === offer.bankId && (
-                      <div className="extra-details animate-fade-in">
-                        <div className="extra-detail-row">
-                          <span>Mindestbetrag:</span>
-                          <strong>€ {bank.minAmount.toLocaleString('de-AT')}</strong>
-                        </div>
-                        <div className="extra-detail-row">
-                          <span>Maximalbetrag:</span>
-                          <strong>€ {bank.maxAmount.toLocaleString('de-AT')}</strong>
-                        </div>
-                        <div className="extra-detail-row">
-                          <span>Genehmigungsrate:</span>
-                          <strong>{bank.approvalRate}%</strong>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="comparison-card-footer">
-                    <button
-                      className="btn btn-outline btn-sm"
-                      onClick={() => setShowDetails(showDetails === offer.bankId ? null : offer.bankId)}
-                    >
-                      {showDetails === offer.bankId ? 'Weniger anzeigen' : 'Mehr Details'}
-                    </button>
-                    <button
-                      className={`btn ${isBest ? 'btn-primary' : 'btn-secondary'} btn-sm`}
-                      onClick={() => selectBank(offer.bank)}
-                    >
-                      {isBest ? '🏆 Dieses Angebot wählen' : 'Auswählen'}
-                    </button>
+                    </div>
                   </div>
                 </div>
-              );
-            })}
+                <div className="comparison-card-footer">
+                  <button
+                    className={`btn ${sc.months === duration ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                    onClick={() => { setDuration(sc.months); goToSimulator(); }}
+                  >
+                    Auswählen
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -341,27 +218,27 @@ const LoanComparator = () => {
       {/* Section avantages */}
       <section className="advantages-section">
         <div className="container">
-          <h2>Warum unseren Vergleich nutzen?</h2>
+          <h2>Warum FinanzPlus Austria?</h2>
           <div className="advantages-grid">
             <div className="advantage-card">
+              <span className="advantage-icon">🔒</span>
+              <h3>Fester Zinssatz</h3>
+              <p>2,8% fest – keine versteckten Kosten, keine bösen Überraschungen</p>
+            </div>
+            <div className="advantage-card">
               <span className="advantage-icon">⚡</span>
-              <h3>Echtzeit-Vergleich</h3>
-              <p>Aktuelle Konditionen von allen Partnerbanken in Sekunden</p>
+              <h3>Schnelle Antwort</h3>
+              <p>Antwort auf Ihre Anfrage innerhalb von 24 Stunden garantiert</p>
             </div>
             <div className="advantage-card">
               <span className="advantage-icon">💰</span>
-              <h3>Geld sparen</h3>
-              <p>Finden Sie das günstigste Angebot und sparen Sie Tausende Euro</p>
-            </div>
-            <div className="advantage-card">
-              <span className="advantage-icon">🔒</span>
-              <h3>100% Sicher</h3>
-              <p>Ihre Daten sind verschlüsselt und werden nicht weitergegeben</p>
+              <h3>Kostenlos</h3>
+              <p>Unser Service ist für Sie völlig kostenfrei und unverbindlich</p>
             </div>
             <div className="advantage-card">
               <span className="advantage-icon">🎯</span>
-              <h3>Unabhängig</h3>
-              <p>Objektiver Vergleich ohne versteckte Kosten oder Provisionen</p>
+              <h3>Transparent</h3>
+              <p>Klare Konditionen ohne versteckte Gebühren oder Provisionen</p>
             </div>
           </div>
         </div>
@@ -371,12 +248,12 @@ const LoanComparator = () => {
       <section className="cta-section">
         <div className="container text-center">
           <h2>Bereit für Ihren Kredit?</h2>
-          <p>Wählen Sie das beste Angebot und starten Sie Ihre Kreditanfrage in wenigen Minuten</p>
+          <p>Starten Sie jetzt Ihren Kreditantrag – einfach, schnell und kostenlos</p>
           <button
             className="btn btn-primary btn-lg"
-            onClick={() => selectBank(bestOffer?.bank)}
+            onClick={goToSimulator}
           >
-            🏆 Bestes Angebot wählen
+            🧮 Kreditantrag stellen
           </button>
         </div>
       </section>
@@ -385,7 +262,3 @@ const LoanComparator = () => {
 };
 
 export default LoanComparator;
-
-// Made with ❤️ by Bob for FinanzPlus Austria
-
-// Made with Bob

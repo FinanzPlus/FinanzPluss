@@ -10,7 +10,7 @@ const QuickCalculator = ({ navigate }) => {
 
   // Calcul de la mensualité
   useEffect(() => {
-    const interestRate = 0.035; // 3.5% taux d'intérêt annuel
+    const interestRate = 0.028; // 2.8% taux d'intérêt fixe
     const monthlyRate = interestRate / 12;
     const numPayments = duration;
     
@@ -90,7 +90,7 @@ const QuickCalculator = ({ navigate }) => {
               <div className="result-label">Geschätzte monatliche Rate</div>
               <div className="result-amount">~{formatNumber(monthlyPayment)} €</div>
               <div className="result-note">
-                * Beispielrechnung bei 3,5% Zinssatz
+                * Beispielrechnung bei 2,8% Zinssatz (fest)
               </div>
               <div className="result-details">
                 <div className="result-detail-item">
@@ -147,15 +147,6 @@ const Home = () => {
     animateCounter(98, 'satisfaction');
   }, []);
 
-  // Données des partenaires bancaires
-  const partners = [
-    { name: 'Erste Bank', founded: 1819, specialty: 'Immobilienfinanzierung' },
-    { name: 'Raiffeisen Bank', founded: 1886, specialty: 'Unternehmenskredite' },
-    { name: 'Bank Austria', founded: 1855, specialty: 'Privatkredite' },
-    { name: 'BAWAG P.S.K.', founded: 1883, specialty: 'Autokredite' },
-    { name: 'Volksbank', founded: 1922, specialty: 'Wohnbaukredite' }
-  ];
-
   // Étapes du processus
   const steps = [
     {
@@ -210,8 +201,8 @@ const Home = () => {
   const benefits = [
     {
       icon: '🏆',
-      title: 'Beste Konditionen',
-      description: 'Wir vergleichen über 20 österreichische Banken für Sie'
+      title: 'Fester Zinssatz',
+      description: 'Transparenter Festzins von 2,8% – keine versteckten Kosten'
     },
     {
       icon: '⚡',
@@ -252,8 +243,7 @@ const Home = () => {
               <span className="hero-highlight">zu besten Konditionen</span>
             </h1>
             <p className="hero-subtitle animate-fade-in-up">
-              Vergleichen Sie Angebote führender österreichischer Banken und sparen Sie bis zu 40% Zinsen. 
-              Schnell, sicher und kostenlos.
+              Erhalten Sie Ihren Kredit zu einem festen Zinssatz von 2,8% – transparent, schnell und kostenlos.
             </p>
             <div className="hero-buttons animate-fade-in-up">
               <button
@@ -283,20 +273,6 @@ const Home = () => {
                 <span>98% Zufriedenheit</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. BANDE LOGOS PARTENAIRES */}
-      <section className="partners-banner">
-        <div className="container">
-          <p className="partners-banner-title">Offizieller Partner von:</p>
-          <div className="partners-banner-logos">
-            {partners.map((partner, index) => (
-              <div key={index} className="partner-banner-logo animate-fade-in">
-                <span className="partner-name">{partner.name}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -357,42 +333,6 @@ const Home = () => {
 
       {/* 5. SIMULATEUR RAPIDE INTÉGRÉ */}
       <QuickCalculator navigate={navigate} />
-
-      {/* 6. PARTENAIRES BANCAIRES DÉTAILLÉS */}
-      <section className="partners-section section bg-off-white">
-        <div className="container">
-          <div className="section-header text-center">
-            <h2 className="section-title">Unsere Bankpartner</h2>
-            <p className="section-subtitle">
-              Wir arbeiten mit den führenden österreichischen Banken zusammen
-            </p>
-          </div>
-          <div className="partners-grid">
-            {partners.map((partner, index) => (
-              <div key={index} className="partner-card animate-fade-in-up">
-                <div className="partner-badge">Offizieller Partner</div>
-                <div className="partner-logo-large">
-                  <span>{partner.name}</span>
-                </div>
-                <h3 className="partner-name">{partner.name}</h3>
-                <div className="partner-info">
-                  <div className="partner-detail">
-                    <span className="detail-label">Gegründet</span>
-                    <span className="detail-value">{partner.founded}</span>
-                  </div>
-                  <div className="partner-detail">
-                    <span className="detail-label">Spezialität</span>
-                    <span className="detail-value">{partner.specialty}</span>
-                  </div>
-                </div>
-                <Link to="/partner" className="partner-link">
-                  Mehr erfahren →
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 7. TÉMOIGNAGES CLIENTS */}
       <section className="testimonials-section section">

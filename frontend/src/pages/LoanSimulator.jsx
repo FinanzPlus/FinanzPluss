@@ -2,73 +2,10 @@ import React, { useState, useEffect } from 'react';
 import FinancialDisclaimer from '../components/common/FinancialDisclaimer';
 import './LoanSimulator.css';
 
+const FIXED_RATE = 2.8; // Taux d'intérêt fixe en %
+
 const LoanSimulator = () => {
-  // Étapes du simulateur
   const [currentStep, setCurrentStep] = useState(1);
-  
-  // Données des banques partenaires autrichiennes avec leurs taux
-  const banks = [
-    {
-      id: 1,
-      name: 'Erste Bank',
-      logo: '🏦',
-      rate: 2.5,
-      specialties: ['Immobilienfinanzierung', 'Wohnkredit', 'Baufinanzierung'],
-      minAmount: 5000,
-      maxAmount: 500000,
-      minDuration: 12,
-      maxDuration: 360,
-      color: '#E2001A'
-    },
-    {
-      id: 2,
-      name: 'Raiffeisen Bank',
-      logo: '🏛️',
-      rate: 2.8,
-      specialties: ['Unternehmenskredite', 'Geschäftskredite', 'Investitionsfinanzierung'],
-      minAmount: 10000,
-      maxAmount: 1000000,
-      minDuration: 12,
-      maxDuration: 240,
-      color: '#FFED00'
-    },
-    {
-      id: 3,
-      name: 'Bank Austria',
-      logo: '🏢',
-      rate: 3.2,
-      specialties: ['Privatkredit', 'Konsumkredit', 'Umschuldung'],
-      minAmount: 1000,
-      maxAmount: 75000,
-      minDuration: 12,
-      maxDuration: 120,
-      color: '#E2001A'
-    },
-    {
-      id: 4,
-      name: 'BAWAG P.S.K.',
-      logo: '💼',
-      rate: 2.7,
-      specialties: ['Privatkredit', 'Konsumkredit', 'Umschuldung'],
-      minAmount: 3000,
-      maxAmount: 100000,
-      minDuration: 12,
-      maxDuration: 84,
-      color: '#005CA9'
-    },
-    {
-      id: 5,
-      name: 'Volksbank',
-      logo: '🏢',
-      rate: 2.4,
-      specialties: ['Unternehmenskredit', 'Investitionskredit', 'Betriebsmittel'],
-      minAmount: 10000,
-      maxAmount: 400000,
-      minDuration: 60,
-      maxDuration: 360,
-      color: '#009640'
-    }
-  ];
 
   // Objets de prêt
   const loanPurposes = [
@@ -81,7 +18,6 @@ const LoanSimulator = () => {
   ];
 
   // États du formulaire
-  const [selectedBank, setSelectedBank] = useState(null);
   const [formData, setFormData] = useState({
     amount: 25000,
     duration: 60,
@@ -99,28 +35,8 @@ const LoanSimulator = () => {
 
   // Calcul automatique quand les paramètres changent
   useEffect(() => {
-    if (selectedBank) {
-      calculateLoan();
-    }
-  }, [formData.amount, formData.duration, selectedBank]);
-
-  // Sélection d'une banque
-  const handleBankSelect = (bank) => {
-    setSelectedBank(bank);
-    // Ajuster les limites si nécessaire
-    if (formData.amount < bank.minAmount) {
-      setFormData(prev => ({ ...prev, amount: bank.minAmount }));
-    }
-    if (formData.amount > bank.maxAmount) {
-      setFormData(prev => ({ ...prev, amount: bank.maxAmount }));
-    }
-    if (formData.duration < bank.minDuration) {
-      setFormData(prev => ({ ...prev, duration: bank.minDuration }));
-    }
-    if (formData.duration > bank.maxDuration) {
-      setFormData(prev => ({ ...prev, duration: bank.maxDuration }));
-    }
-  };
+    calculateLoan();
+  }, [formData.amount, formData.duration]);
 
   // Gestion des changements de formulaire
   const handleInputChange = (e) => {
@@ -131,40 +47,36 @@ const LoanSimulator = () => {
     }));
   };
 
-  // Calcul du prêt avec formule financière
+  // Calcul du prêt avec taux fixe 2.8%
+  // M = (Capital × 0,028/12) / (1 - (1 + 0,028/12)^-Durée)
   const calculateLoan = () => {
-    if (!selectedBank) return;
-
     const { amount, duration } = formData;
-    const annualRate = selectedBank.rate;
-    
-    // Formule: M = P × (r/12) / (1 - (1 + r/12)^(-n))
-    const monthlyRate = annualRate / 100 / 12;
+    const monthlyRate = FIXED_RATE / 100 / 12;
     const numberOfPayments = duration;
-    
+
     let monthlyPayment;
     if (monthlyRate === 0) {
       monthlyPayment = amount / numberOfPayments;
     } else {
-      monthlyPayment = amount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
+      monthlyPayment = (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
     }
-    
+
     const totalAmount = monthlyPayment * numberOfPayments;
     const totalInterest = totalAmount - amount;
-    
+
     // Tableau d'amortissement
     const table = [];
     let remainingBalance = amount;
-    
+
     for (let month = 1; month <= numberOfPayments; month++) {
       const interestPayment = remainingBalance * monthlyRate;
       const principalPayment = monthlyPayment - interestPayment;
       remainingBalance -= principalPayment;
-      
+
       if (month === numberOfPayments) {
         remainingBalance = 0;
       }
-      
+
       table.push({
         month,
         monthlyPayment: monthlyPayment.toFixed(2),
@@ -173,14 +85,14 @@ const LoanSimulator = () => {
         remainingBalance: Math.max(0, remainingBalance).toFixed(2)
       });
     }
-    
+
     setResults({
       monthlyPayment: monthlyPayment.toFixed(2),
       totalAmount: totalAmount.toFixed(2),
       totalInterest: totalInterest.toFixed(2),
-      effectiveRate: annualRate.toFixed(2)
+      effectiveRate: FIXED_RATE.toFixed(2)
     });
-    
+
     setAmortizationTable(table);
   };
 
@@ -188,7 +100,7 @@ const LoanSimulator = () => {
   const exportToPDF = () => {
     const printWindow = window.open('', '_blank');
     const purposeLabel = loanPurposes.find(p => p.value === formData.purpose)?.label || formData.purpose;
-    
+
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -223,14 +135,13 @@ const LoanSimulator = () => {
         <div class="summary">
           <h2 style="margin-top: 0; color: #0A1628;">Kreditdetails</h2>
           <div class="summary-grid">
-            <div class="summary-item"><strong>Bank:</strong><span>${selectedBank.name}</span></div>
             <div class="summary-item"><strong>Kreditbetrag:</strong><span>€ ${formData.amount.toLocaleString('de-AT')}</span></div>
             <div class="summary-item"><strong>Laufzeit:</strong><span>${formData.duration} Monate</span></div>
             <div class="summary-item"><strong>Verwendungszweck:</strong><span>${purposeLabel}</span></div>
-            <div class="summary-item"><strong>Zinssatz:</strong><span>${selectedBank.rate}% p.a.</span></div>
-            <div class="summary-item"><strong>Monatliche Rate:</strong><span>€ ${results.monthlyPayment}</span></div>
-            <div class="summary-item"><strong>Gesamtbetrag:</strong><span>€ ${results.totalAmount}</span></div>
-            <div class="summary-item"><strong>Gesamtzinsen:</strong><span>€ ${results.totalInterest}</span></div>
+            <div class="summary-item"><strong>Zinssatz:</strong><span>2,8% fest</span></div>
+            <div class="summary-item"><strong>Monatliche Rate:</strong><span>€ ${results?.monthlyPayment}</span></div>
+            <div class="summary-item"><strong>Gesamtbetrag:</strong><span>€ ${results?.totalAmount}</span></div>
+            <div class="summary-item"><strong>Gesamtzinsen:</strong><span>€ ${results?.totalInterest}</span></div>
           </div>
         </div>
         
@@ -262,24 +173,21 @@ const LoanSimulator = () => {
           <p><strong>FinanzPlus Austria GmbH</strong></p>
           <p>Stephansplatz 1, 1010 Wien | Tel: +49 155 65236794 | Email: Kontakt_finanzplusaustria@proton.me</p>
           <p>Erstellt am: ${new Date().toLocaleDateString('de-AT', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-          <p style="margin-top: 10px; font-style: italic;">Dies ist eine unverbindliche Berechnung. Die tatsächlichen Konditionen können abweichen.</p>
+          <p style="margin-top: 10px; font-style: italic;">Dies ist eine unverbindliche Berechnung. Zinssatz: 2,8% fest.</p>
         </div>
         
         <script>window.onload = function() { window.print(); }</script>
       </body>
       </html>
     `;
-    
+
     printWindow.document.write(htmlContent);
     printWindow.document.close();
   };
 
-  // Envoi de la demande de prêt avec sauvegarde et email automatique
+  // Envoi de la demande via WhatsApp
   const handleWhatsAppSubmit = async () => {
-    if (!selectedBank || !results) {
-      alert('Bitte wählen Sie zuerst eine Bank und berechnen Sie Ihren Kredit.');
-      return;
-    }
+    if (!results) return;
 
     // Validation des champs personnels
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
@@ -289,27 +197,19 @@ const LoanSimulator = () => {
 
     const purposeLabel = loanPurposes.find(p => p.value === formData.purpose)?.label || formData.purpose;
 
-    // Message WhatsApp
-    const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate bei ${selectedBank.name} beantragen. Zinssatz: ${selectedBank.rate}%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
+    // Message WhatsApp avec taux fixe 2,8%
+    const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate beantragen. Zinssatz: 2,8%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
     const whatsappNumber = '4915565236794';
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
     try {
-      console.log('📧 [FRONTEND] Tentative d\'envoi de la demande au backend...');
-      
-      // Déterminer l'URL de l'API
       const apiUrl = import.meta.env.VITE_API_URL ||
                      window.location.origin.replace('finanzplus-frontend', 'finanzplus-backend').replace(':3000', ':5000') ||
                      'https://finanzplus-backend.up.railway.app';
-      
-      console.log('📧 [FRONTEND] URL API:', apiUrl);
 
-      // ÉTAPE 1 & 2: Sauvegarder dans la base de données et envoyer l'email automatique
       const response = await fetch(`${apiUrl}/api/loans/applications`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -318,48 +218,28 @@ const LoanSimulator = () => {
           amount: formData.amount,
           duration: formData.duration,
           purpose: purposeLabel,
-          selectedBank: {
-            name: selectedBank.name,
-            rate: selectedBank.rate
-          },
+          interestRate: FIXED_RATE,
           monthlyPayment: parseFloat(results.monthlyPayment),
           totalAmount: parseFloat(results.totalAmount)
         })
       });
 
-      console.log('📧 [FRONTEND] Réponse reçue:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('❌ [FRONTEND] Erreur API:', errorData);
-        throw new Error(errorData.message || 'Fehler beim Senden der Anfrage');
+      if (response.ok) {
+        alert('✅ Ihre Anfrage wurde erfolgreich gespeichert!\n\n📧 Sie erhalten in Kürze eine Bestätigungs-E-Mail.\n\n💬 Sie werden jetzt zu WhatsApp weitergeleitet.');
+      } else {
+        throw new Error('API Fehler');
       }
-
-      const data = await response.json();
-      console.log('✅ [FRONTEND] Demande sauvegardée et email envoyé:', data);
-
-      // Afficher un message de confirmation
-      alert('✅ Ihre Anfrage wurde erfolgreich gespeichert!\n\n📧 Sie erhalten in Kürze eine Bestätigungs-E-Mail.\n\n💬 Sie werden jetzt zu WhatsApp weitergeleitet.');
-
-      // ÉTAPE 3: Redirection vers WhatsApp
-      window.open(whatsappUrl, '_blank');
-
     } catch (error) {
-      console.error('❌ [FRONTEND] Erreur lors de la soumission:', error);
-      console.error('❌ [FRONTEND] Message:', error.message);
-      
-      // Message d'erreur plus informatif
-      alert(`⚠️ Hinweis: Die E-Mail-Benachrichtigung konnte nicht gesendet werden.\n\nAber keine Sorge! Sie werden trotzdem zu WhatsApp weitergeleitet und können Ihre Anfrage direkt an uns senden.\n\nFehler: ${error.message}`);
-      
-      // En cas d'erreur, rediriger quand même vers WhatsApp
-      window.open(whatsappUrl, '_blank');
+      alert(`⚠️ Hinweis: Die E-Mail-Benachrichtigung konnte nicht gesendet werden.\n\nSie werden trotzdem zu WhatsApp weitergeleitet.`);
     }
+
+    window.open(whatsappUrl, '_blank');
   };
 
   // Navigation entre étapes
   const goToNextStep = () => {
-    if (currentStep === 1 && !selectedBank) {
-      alert('Bitte wählen Sie zuerst eine Bank aus.');
+    if (currentStep === 1 && (!formData.amount || !formData.duration)) {
+      alert('Bitte geben Sie Betrag und Laufzeit ein.');
       return;
     }
     if (currentStep < 3) {
@@ -382,105 +262,47 @@ const LoanSimulator = () => {
           <p className="hero-subtitle">
             In 3 einfachen Schritten zu Ihrem Wunschkredit
           </p>
-          
+
           {/* Indicateur d'étapes */}
           <div className="steps-indicator">
             <div className={`step-indicator ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
               <div className="step-number">1</div>
-              <div className="step-label">Bank wählen</div>
+              <div className="step-label">Betrag & Laufzeit</div>
             </div>
             <div className="step-line"></div>
             <div className={`step-indicator ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
               <div className="step-number">2</div>
-              <div className="step-label">Kredit berechnen</div>
+              <div className="step-label">Ihre Daten</div>
             </div>
             <div className="step-line"></div>
             <div className={`step-indicator ${currentStep >= 3 ? 'active' : ''}`}>
               <div className="step-number">3</div>
-              <div className="step-label">Antrag stellen</div>
+              <div className="step-label">Zusammenfassung</div>
             </div>
           </div>
         </div>
-      
-      {/* Avertissement financier obligatoire */}
-      <FinancialDisclaimer />
+
+        {/* Avertissement financier obligatoire */}
+        <FinancialDisclaimer />
       </section>
 
       {/* Contenu principal */}
       <section className="simulator-content">
         <div className="container">
-          
-          {/* ÉTAPE 1 : Sélection de la banque */}
+
+          {/* ÉTAPE 1 : Montant et durée */}
           {currentStep === 1 && (
             <div className="step-content animate-fade-in">
-              <h2 className="step-title">Schritt 1: Wählen Sie Ihre Bank</h2>
+              <h2 className="step-title">Schritt 1: Betrag und Laufzeit</h2>
               <p className="step-description">
-                Jede Bank bietet unterschiedliche Zinssätze und Konditionen. Wählen Sie die Bank, die am besten zu Ihnen passt.
-              </p>
-              
-              <div className="banks-grid">
-                {banks.map(bank => (
-                  <div
-                    key={bank.id}
-                    className={`bank-card ${selectedBank?.id === bank.id ? 'selected' : ''}`}
-                    onClick={() => handleBankSelect(bank)}
-                  >
-                    <div className="bank-badge">Offizieller Partner</div>
-                    <div className="bank-logo" style={{ color: bank.color }}>
-                      {bank.logo}
-                    </div>
-                    <h3 className="bank-name">{bank.name}</h3>
-                    <div className="bank-rate">
-                      <span className="rate-label">Zinssatz ab</span>
-                      <span className="rate-value">{bank.rate}% p.a.</span>
-                    </div>
-                    <div className="bank-specialties">
-                      {bank.specialties.map((specialty, idx) => (
-                        <span key={idx} className="specialty-tag">{specialty}</span>
-                      ))}
-                    </div>
-                    <div className="bank-limits">
-                      <div className="limit-item">
-                        <span>💰</span>
-                        <span>{(bank.minAmount / 1000).toFixed(0)}K - {(bank.maxAmount / 1000).toFixed(0)}K €</span>
-                      </div>
-                      <div className="limit-item">
-                        <span>📅</span>
-                        <span>{bank.minDuration} - {bank.maxDuration} Monate</span>
-                      </div>
-                    </div>
-                    {selectedBank?.id === bank.id && (
-                      <div className="selected-indicator">✓ Ausgewählt</div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div className="step-actions">
-                <button
-                  className="btn btn-primary btn-lg"
-                  onClick={goToNextStep}
-                  disabled={!selectedBank}
-                >
-                  Weiter zu Schritt 2 →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* ÉTAPE 2 : Paramètres du prêt */}
-          {currentStep === 2 && selectedBank && (
-            <div className="step-content animate-fade-in">
-              <h2 className="step-title">Schritt 2: Kreditdetails eingeben</h2>
-              <p className="step-description">
-                Ausgewählte Bank: <strong>{selectedBank.name}</strong> | Zinssatz: <strong>{selectedBank.rate}% p.a.</strong>
+                Geben Sie Ihren Wunschbetrag und die gewünschte Laufzeit ein.
               </p>
 
               <div className="simulator-grid">
                 {/* Formulaire */}
                 <div className="simulator-form-card">
-                  <h3>Parameter anpassen</h3>
-                  
+                  <h3>Parameter eingeben</h3>
+
                   <div className="form-group">
                     <label htmlFor="amount">
                       Kreditbetrag
@@ -490,16 +312,16 @@ const LoanSimulator = () => {
                       type="range"
                       id="amount"
                       name="amount"
-                      min={selectedBank.minAmount}
-                      max={selectedBank.maxAmount}
+                      min={1000}
+                      max={500000}
                       step="1000"
                       value={formData.amount}
                       onChange={handleInputChange}
                       className="range-input"
                     />
                     <div className="range-labels">
-                      <span>€ {selectedBank.minAmount.toLocaleString('de-AT')}</span>
-                      <span>€ {selectedBank.maxAmount.toLocaleString('de-AT')}</span>
+                      <span>€ 1.000</span>
+                      <span>€ 500.000</span>
                     </div>
                   </div>
 
@@ -512,16 +334,16 @@ const LoanSimulator = () => {
                       type="range"
                       id="duration"
                       name="duration"
-                      min={selectedBank.minDuration}
-                      max={selectedBank.maxDuration}
+                      min={12}
+                      max={360}
                       step="6"
                       value={formData.duration}
                       onChange={handleInputChange}
                       className="range-input"
                     />
                     <div className="range-labels">
-                      <span>{selectedBank.minDuration} Monate</span>
-                      <span>{selectedBank.maxDuration} Monate</span>
+                      <span>12 Monate</span>
+                      <span>360 Monate</span>
                     </div>
                   </div>
 
@@ -542,14 +364,15 @@ const LoanSimulator = () => {
                     </select>
                   </div>
 
+                  {/* Taux fixe affiché en lecture seule */}
                   <div className="form-group">
-                    <label>
-                      Zinssatz (gemäß {selectedBank.name})
-                      <span className="label-value locked">🔒 {selectedBank.rate}% p.a.</span>
-                    </label>
+                    <label>Zinssatz</label>
+                    <div className="fixed-rate-display">
+                      🔒 <strong>Zinssatz: 2,8% fest</strong>
+                    </div>
                     <div className="locked-info">
                       <span className="info-icon">ℹ️</span>
-                      <span>Der Zinssatz ist von der gewählten Bank festgelegt</span>
+                      <span>Ihr fester Zinssatz – keine Überraschungen</span>
                     </div>
                   </div>
                 </div>
@@ -557,7 +380,7 @@ const LoanSimulator = () => {
                 {/* Résultats */}
                 <div className="simulator-results-card">
                   <h3>Ihre Kreditberechnung</h3>
-                  
+
                   {results && (
                     <>
                       <div className="result-highlight">
@@ -586,16 +409,16 @@ const LoanSimulator = () => {
                         <div className="result-item">
                           <span className="result-icon">📈</span>
                           <div>
-                            <div className="result-item-label">Effektivzins</div>
-                            <div className="result-item-value">{results.effectiveRate}%</div>
+                            <div className="result-item-label">Zinssatz</div>
+                            <div className="result-item-value">2,8% fest</div>
                           </div>
                         </div>
 
                         <div className="result-item">
-                          <span className="result-icon">🏦</span>
+                          <span className="result-icon">📅</span>
                           <div>
-                            <div className="result-item-label">Bank</div>
-                            <div className="result-item-value">{selectedBank.name}</div>
+                            <div className="result-item-label">Laufzeit</div>
+                            <div className="result-item-value">{formData.duration} Monate</div>
                           </div>
                         </div>
                       </div>
@@ -649,6 +472,87 @@ const LoanSimulator = () => {
               )}
 
               <div className="step-actions">
+                <button className="btn btn-primary btn-lg" onClick={goToNextStep}>
+                  Weiter zu Schritt 2 →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ÉTAPE 2 : Informations personnelles */}
+          {currentStep === 2 && (
+            <div className="step-content animate-fade-in">
+              <h2 className="step-title">Schritt 2: Persönliche Informationen</h2>
+              <p className="step-description">
+                Geben Sie Ihre Kontaktdaten ein, damit wir Sie persönlich beraten können.
+              </p>
+
+              <div className="personal-info-card" style={{ maxWidth: '540px', margin: '0 auto' }}>
+                <h3>Ihre Kontaktdaten</h3>
+
+                <div className="form-group">
+                  <label htmlFor="firstName">Vorname *</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="text-input"
+                    placeholder="Max"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="lastName">Nachname *</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="text-input"
+                    placeholder="Mustermann"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">E-Mail *</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="text-input"
+                    placeholder="max.mustermann@email.com"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="phone">Telefon *</label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="text-input"
+                    placeholder="+43 664 123 4567"
+                    required
+                  />
+                </div>
+
+                <div className="info-box">
+                  <span className="info-icon">🔒</span>
+                  <p>Ihre Daten werden sicher übertragen und nicht an Dritte weitergegeben</p>
+                </div>
+              </div>
+
+              <div className="step-actions">
                 <button className="btn btn-outline" onClick={goToPreviousStep}>
                   ← Zurück
                 </button>
@@ -659,132 +563,67 @@ const LoanSimulator = () => {
             </div>
           )}
 
-          {/* ÉTAPE 3 : Informations personnelles et envoi WhatsApp */}
-          {currentStep === 3 && selectedBank && results && (
+          {/* ÉTAPE 3 : Récapitulatif et envoi WhatsApp */}
+          {currentStep === 3 && results && (
             <div className="step-content animate-fade-in">
-              <h2 className="step-title">Schritt 3: Persönliche Informationen</h2>
+              <h2 className="step-title">Schritt 3: Zusammenfassung</h2>
               <p className="step-description">
-                Füllen Sie Ihre Daten aus und senden Sie Ihre Anfrage direkt per WhatsApp
+                Überprüfen Sie Ihre Daten und senden Sie Ihren Antrag per WhatsApp.
               </p>
 
-              <div className="final-step-grid">
-                {/* Formulaire personnel */}
-                <div className="personal-info-card">
-                  <h3>Ihre Kontaktdaten</h3>
-                  
-                  <div className="form-group">
-                    <label htmlFor="firstName">Vorname *</label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className="text-input"
-                      placeholder="Max"
-                      required
-                    />
-                  </div>
+              <div className="summary-card" style={{ maxWidth: '560px', margin: '0 auto' }}>
+                <h3>Kreditdetails</h3>
 
-                  <div className="form-group">
-                    <label htmlFor="lastName">Nachname *</label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      className="text-input"
-                      placeholder="Mustermann"
-                      required
-                    />
+                <div className="summary-items">
+                  <div className="summary-row">
+                    <span>Kreditbetrag:</span>
+                    <strong>€ {formData.amount.toLocaleString('de-AT')}</strong>
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="email">E-Mail *</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="text-input"
-                      placeholder="max.mustermann@email.com"
-                      required
-                    />
+                  <div className="summary-row">
+                    <span>Laufzeit:</span>
+                    <strong>{formData.duration} Monate</strong>
                   </div>
-
-                  <div className="form-group">
-                    <label htmlFor="phone">Telefon *</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="text-input"
-                      placeholder="+43 664 123 4567"
-                      required
-                    />
+                  <div className="summary-row">
+                    <span>Verwendungszweck:</span>
+                    <strong>{loanPurposes.find(p => p.value === formData.purpose)?.label}</strong>
                   </div>
-
-                  <div className="info-box">
-                    <span className="info-icon">🔒</span>
-                    <p>Ihre Daten werden sicher übertragen und nicht gespeichert</p>
+                  <div className="summary-row">
+                    <span>Zinssatz:</span>
+                    <strong>2,8% fest 🔒</strong>
                   </div>
                 </div>
 
-                {/* Récapitulatif */}
-                <div className="summary-card">
-                  <h3>Zusammenfassung</h3>
-                  
-                  <div className="summary-section">
-                    <h4>Gewählte Bank</h4>
-                    <div className="summary-bank">
-                      <span className="bank-logo-small">{selectedBank.logo}</span>
-                      <div>
-                        <div className="bank-name-small">{selectedBank.name}</div>
-                        <div className="bank-rate-small">{selectedBank.rate}% p.a.</div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="summary-section highlight" style={{ marginTop: '16px' }}>
+                  <h4>Ihre monatliche Rate</h4>
+                  <div className="summary-monthly">€ {results.monthlyPayment}</div>
+                </div>
 
-                  <div className="summary-section">
-                    <h4>Kreditdetails</h4>
-                    <div className="summary-items">
-                      <div className="summary-row">
-                        <span>Kreditbetrag:</span>
-                        <strong>€ {formData.amount.toLocaleString('de-AT')}</strong>
-                      </div>
-                      <div className="summary-row">
-                        <span>Laufzeit:</span>
-                        <strong>{formData.duration} Monate</strong>
-                      </div>
-                      <div className="summary-row">
-                        <span>Verwendungszweck:</span>
-                        <strong>{loanPurposes.find(p => p.value === formData.purpose)?.label}</strong>
-                      </div>
-                      <div className="summary-row">
-                        <span>Zinssatz:</span>
-                        <strong>{selectedBank.rate}% p.a.</strong>
-                      </div>
-                    </div>
+                <div className="summary-items" style={{ marginTop: '16px' }}>
+                  <div className="summary-row">
+                    <span>Gesamtbetrag:</span>
+                    <strong>€ {results.totalAmount}</strong>
                   </div>
-
-                  <div className="summary-section highlight">
-                    <h4>Ihre monatliche Rate</h4>
-                    <div className="summary-monthly">€ {results.monthlyPayment}</div>
+                  <div className="summary-row">
+                    <span>Gesamtzinsen:</span>
+                    <strong>€ {results.totalInterest}</strong>
                   </div>
+                </div>
 
-                  <div className="summary-section">
-                    <div className="summary-row">
-                      <span>Gesamtbetrag:</span>
-                      <strong>€ {results.totalAmount}</strong>
-                    </div>
-                    <div className="summary-row">
-                      <span>Gesamtzinsen:</span>
-                      <strong>€ {results.totalInterest}</strong>
-                    </div>
+                <hr style={{ margin: '16px 0', borderColor: '#e5e7eb' }} />
+
+                <h3>Ihre Kontaktdaten</h3>
+                <div className="summary-items">
+                  <div className="summary-row">
+                    <span>Name:</span>
+                    <strong>{formData.firstName} {formData.lastName}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>E-Mail:</span>
+                    <strong>{formData.email}</strong>
+                  </div>
+                  <div className="summary-row">
+                    <span>Telefon:</span>
+                    <strong>{formData.phone}</strong>
                   </div>
                 </div>
               </div>
@@ -804,8 +643,8 @@ const LoanSimulator = () => {
               <div className="whatsapp-info">
                 <p>
                   <strong>Was passiert als Nächstes?</strong><br />
-                  Nach dem Klick öffnet sich WhatsApp mit einer vorausgefüllten Nachricht. 
-                  Sie können die Nachricht noch anpassen und dann direkt an unsere Berater senden. 
+                  Nach dem Klick öffnet sich WhatsApp mit einer vorausgefüllten Nachricht.
+                  Sie können die Nachricht noch anpassen und dann direkt an unsere Berater senden.
                   Wir melden uns innerhalb von 24 Stunden bei Ihnen!
                 </p>
               </div>
@@ -818,7 +657,3 @@ const LoanSimulator = () => {
 };
 
 export default LoanSimulator;
-
-// Made with ❤️ by Bob for FinanzPlus Austria
-
-// Made with Bob

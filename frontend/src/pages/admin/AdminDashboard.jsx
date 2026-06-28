@@ -243,13 +243,6 @@ const AdminDashboard = () => {
             )}
           </Link>
 
-          <Link to="/admin/partners" className="action-card">
-            <div className="action-icon">
-              <i className="fas fa-handshake"></i>
-            </div>
-            <h3>Partner</h3>
-            <p>Bankpartner verwalten</p>
-          </Link>
 
           <Link to="/admin/statistics" className="action-card">
             <div className="action-icon">

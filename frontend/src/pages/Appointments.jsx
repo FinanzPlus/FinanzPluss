@@ -278,7 +278,7 @@ const Appointments = () => {
             </div>
             <div className="reason-card">
               <div className="reason-icon">🤝</div>
-              <h3>15+ Partnerbanken</h3>
+              <h3>Fester Zinssatz 2,8%</h3>
               <p>Zugang zu den besten Konditionen am Markt</p>
             </div>
             <div className="reason-card">

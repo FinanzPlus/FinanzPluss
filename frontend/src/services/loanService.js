@@ -129,39 +129,27 @@ export const sendConfirmationEmail = async (emailData) => {
 };
 
 /**
- * Compare les offres de plusieurs banques
+ * Calcule une offre avec le taux fixe 2.8%
  */
-export const compareOffers = (amount, duration, banks) => {
-  return banks.map(bank => {
-    const monthlyRate = bank.rate / 100 / 12;
-    const numberOfPayments = duration;
-    
-    let monthlyPayment;
-    if (monthlyRate === 0) {
-      monthlyPayment = amount / numberOfPayments;
-    } else {
-      monthlyPayment = amount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
-    }
-    
-    const totalAmount = monthlyPayment * numberOfPayments;
-    const totalInterest = totalAmount - amount;
-    
-    return {
-      bank: bank.name,
-      bankId: bank.id,
-      rate: bank.rate,
-      monthlyPayment: monthlyPayment.toFixed(2),
-      totalAmount: totalAmount.toFixed(2),
-      totalInterest: totalInterest.toFixed(2),
-      savings: 0 // Calculé après tri
-    };
-  }).sort((a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount))
-    .map((offer, index, array) => {
-      if (index > 0) {
-        offer.savings = (parseFloat(array[index].totalAmount) - parseFloat(array[0].totalAmount)).toFixed(2);
-      }
-      return offer;
-    });
+const FIXED_RATE = 2.8;
+
+export const compareOffers = (amount, duration) => {
+  const monthlyRate = FIXED_RATE / 100 / 12;
+  const monthlyPayment = amount > 0 && duration > 0
+    ? (amount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -duration))
+    : 0;
+  const totalAmount = monthlyPayment * duration;
+  const totalInterest = totalAmount - amount;
+
+  return [{
+    bank: 'FinanzPlus Austria',
+    bankId: 1,
+    rate: FIXED_RATE,
+    monthlyPayment: monthlyPayment.toFixed(2),
+    totalAmount: totalAmount.toFixed(2),
+    totalInterest: totalInterest.toFixed(2),
+    savings: '0.00'
+  }];
 };
 
 /**
@@ -193,10 +181,10 @@ export const exportSimulationJSON = (simulation) => {
 /**
  * Calcule la capacité d'emprunt
  */
-export const calculateBorrowingCapacity = (monthlyIncome, monthlyExpenses, duration, rate) => {
+export const calculateBorrowingCapacity = (monthlyIncome, monthlyExpenses, duration, rate = 2.8) => {
   const availableIncome = monthlyIncome - monthlyExpenses;
   const maxMonthlyPayment = availableIncome * 0.33; // 33% du revenu disponible
-  
+
   const monthlyRate = rate / 100 / 12;
   const numberOfPayments = duration;
   

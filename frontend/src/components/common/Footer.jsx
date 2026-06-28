@@ -20,8 +20,8 @@ const Footer = () => {
               </div>
             </div>
             <p className="footer-description">
-              Ihre vertrauenswürdige Finanzplattform für Kredite und Finanzierungen in Österreich. 
-              Wir vergleichen Angebote führender österreichischer Banken und finden die beste Lösung für Sie.
+              Ihre vertrauenswürdige Finanzplattform für Kredite und Finanzierungen in Österreich.
+                Wir finden die beste Finanzierungslösung für Sie – schnell, sicher und transparent.
             </p>
             <div className="footer-certifications">
               <div className="cert-badge">
@@ -43,7 +43,6 @@ const Footer = () => {
               <li><Link to="/kreditrechner">Kreditrechner</Link></li>
               <li><Link to="/kreditvergleich">Kreditvergleich</Link></li>
               <li><Link to="/kreditfahigkeit">Kreditfähigkeit</Link></li>
-              <li><Link to="/partner">Unsere Partner</Link></li>
               <li><Link to="/uber-uns">Über uns</Link></li>
               <li><Link to="/bewertungen">Kundenbewertungen</Link></li>
               <li><Link to="/kontakt">Kontakt</Link></li>
@@ -126,30 +125,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Section logos partenaires */}
-      <div className="footer-partners">
-        <div className="footer-container">
-          <p className="partners-title">Offizieller Partner von:</p>
-          <div className="partners-logos">
-            <div className="partner-logo" title="Erste Bank">
-              <span className="partner-placeholder">Erste Bank</span>
-            </div>
-            <div className="partner-logo" title="Raiffeisen Bank">
-              <span className="partner-placeholder">Raiffeisen</span>
-            </div>
-            <div className="partner-logo" title="Bank Austria">
-              <span className="partner-placeholder">Bank Austria</span>
-            </div>
-            <div className="partner-logo" title="BAWAG P.S.K.">
-              <span className="partner-placeholder">BAWAG</span>
-            </div>
-            <div className="partner-logo" title="Volksbank">
-              <span className="partner-placeholder">Volksbank</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Section mentions légales */}
       <div className="footer-legal">
         <div className="footer-container">
@@ -175,7 +150,7 @@ const Footer = () => {
               © {currentYear} FinanzPlus Austria. Alle Rechte vorbehalten.
             </p>
             <p className="footer-disclaimer">
-              FinanzPlus Austria ist ein unabhängiger Kreditvermittler und arbeitet mit führenden österreichischen Banken zusammen.
+              FinanzPlus Austria ist ein unabhängiger Kreditvermittler – Zinssatz: 2,8% fest.
             </p>
           </div>
         </div>

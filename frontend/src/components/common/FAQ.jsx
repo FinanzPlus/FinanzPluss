@@ -53,7 +53,7 @@ const FAQ = () => {
         },
         {
           question: 'Sind Sondertilgungen möglich?',
-          answer: 'Ja, bei den meisten unserer Partnerbanken sind kostenlose Sondertilgungen möglich. Die genauen Konditionen variieren je nach Bank und werden Ihnen im Angebot transparent dargestellt.'
+          answer: 'Ja, kostenlose Sondertilgungen sind möglich. Die genauen Konditionen werden Ihnen im Angebot transparent dargestellt.'
         }
       ]
     },

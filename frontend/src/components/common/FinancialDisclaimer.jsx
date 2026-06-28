@@ -21,9 +21,8 @@ const FinancialDisclaimer = ({ variant = 'default' }) => {
             und können je nach individueller Bonität, Kreditbetrag und Laufzeit variieren.
           </p>
           <p>
-            <strong>Kreditvergabe:</strong> Jeder Kreditantrag unterliegt einer individuellen Bonitätsprüfung durch 
-            unsere Partnerbanken. Die endgültige Kreditentscheidung und die konkreten Konditionen werden von der 
-            jeweiligen Bank nach Prüfung Ihrer Unterlagen festgelegt.
+            <strong>Kreditvergabe:</strong> Jeder Kreditantrag unterliegt einer individuellen Bonitätsprüfung.
+            Die endgültige Kreditentscheidung und die konkreten Konditionen werden nach Prüfung Ihrer Unterlagen festgelegt.
           </p>
           <p>
             <strong>Keine Garantie:</strong> Wir übernehmen keine Gewähr für die Richtigkeit, Vollständigkeit oder 

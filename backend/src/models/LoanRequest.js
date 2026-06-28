@@ -36,8 +36,8 @@ class LoanRequest {
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
         RETURNING *`,
         [
-          user_id, partner_id, full_name, email, phone,
-          amount, duration_months, interest_rate || 3.00,
+          user_id, null, full_name, email, phone,
+          amount, duration_months, interest_rate || 2.80,
           monthly_payment, total_amount, total_interest,
           purpose, purpose_details,
           monthly_income, monthly_expenses, employment_status,

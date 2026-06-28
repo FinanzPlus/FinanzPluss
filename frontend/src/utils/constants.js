@@ -178,24 +178,8 @@ export const ROUTES = {
   NOT_FOUND: '*'
 };
 
-// Partenaires bancaires autrichiens
-export const BANK_PARTNERS = [
-  {
-    name: 'Erste Bank',
-    logo: '/assets/logos/erste-bank.png',
-    description: 'Führende österreichische Bank'
-  },
-  {
-    name: 'Raiffeisen Bank',
-    logo: '/assets/logos/raiffeisen.png',
-    description: 'Vertrauenswürdiger Partner'
-  },
-  {
-    name: 'Bank Austria',
-    logo: '/assets/logos/bank-austria.png',
-    description: 'Größte Bank Österreichs'
-  }
-];
+// Taux d'intérêt fixe FinanzPlus Austria
+export const FIXED_INTEREST_RATE = 2.8;
 
 // Local Storage Keys
 export const STORAGE_KEYS = {

@@ -15,7 +15,6 @@ import Register from '@/pages/Register';
 import LoanSimulator from '@/pages/LoanSimulator';
 import LoanComparator from '@/pages/LoanComparator';
 import BorrowingCapacity from '@/pages/BorrowingCapacity';
-import Partners from '@/pages/Partners';
 import About from '@/pages/About';
 import Reviews from '@/pages/Reviews';
 import Contact from '@/pages/Contact';
@@ -56,7 +55,6 @@ function App() {
             <Route path="/kreditfahigkeit" element={<BorrowingCapacity />} />
             
             {/* Informations */}
-            <Route path="/partner" element={<Partners />} />
             <Route path="/uber-uns" element={<About />} />
             <Route path="/bewertungen" element={<Reviews />} />
             <Route path="/kontakt" element={<Contact />} />

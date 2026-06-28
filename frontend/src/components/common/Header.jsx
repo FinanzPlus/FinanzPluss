@@ -61,9 +61,6 @@ const Header = () => {
           <Link to="/kreditvergleich" className={`nav-link ${isActive('/kreditvergleich')}`}>
             📊 Kreditvergleich
           </Link>
-          <Link to="/partner" className={`nav-link ${isActive('/partner')}`}>
-            🏦 Partner
-          </Link>
           <Link to="/uber-uns" className={`nav-link ${isActive('/uber-uns')}`}>
             ℹ️ Über uns
           </Link>
@@ -153,9 +150,6 @@ const Header = () => {
           </Link>
           <Link to="/kreditvergleich" className={`mobile-nav-link ${isActive('/kreditvergleich')}`}>
             📊 Kreditvergleich
-          </Link>
-          <Link to="/partner" className={`mobile-nav-link ${isActive('/partner')}`}>
-            🏦 Partner
           </Link>
           <Link to="/uber-uns" className={`mobile-nav-link ${isActive('/uber-uns')}`}>
             ℹ️ Über uns
