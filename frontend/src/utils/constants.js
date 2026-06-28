@@ -6,8 +6,8 @@ export const API_TIMEOUT = import.meta.env.VITE_API_TIMEOUT || 30000;
 export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '+447451267912';
 export const WHATSAPP_BASE_URL = 'https://wa.me';
 
-// Taux d'intérêt fixe
-export const FIXED_INTEREST_RATE = parseFloat(import.meta.env.VITE_FIXED_INTEREST_RATE) || 3.0;
+// Taux d'intérêt fixe FinanzPlus Austria
+export const FIXED_INTEREST_RATE = 2.8;
 
 // Devise
 export const CURRENCY = import.meta.env.VITE_CURRENCY || 'EUR';
@@ -177,9 +177,6 @@ export const ROUTES = {
   ADMIN: '/admin',
   NOT_FOUND: '*'
 };
-
-// Taux d'intérêt fixe FinanzPlus Austria
-export const FIXED_INTEREST_RATE = 2.8;
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
