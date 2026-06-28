@@ -304,46 +304,37 @@ const LoanSimulator = () => {
                   <h3>Parameter eingeben</h3>
 
                   <div className="form-group">
-                    <label htmlFor="amount">
-                      Kreditbetrag
-                      <span className="label-value">€ {formData.amount.toLocaleString('de-AT')}</span>
-                    </label>
-                    <input
-                      type="range"
-                      id="amount"
-                      name="amount"
-                      min={1000}
-                      max={500000}
-                      step="1000"
-                      value={formData.amount}
-                      onChange={handleInputChange}
-                      className="range-input"
-                    />
-                    <div className="range-labels">
-                      <span>€ 1.000</span>
-                      <span>€ 500.000</span>
+                    <label htmlFor="amount">Kreditbetrag (€)</label>
+                    <div className="input-wrapper">
+                      <input
+                        type="number"
+                        id="amount"
+                        name="amount"
+                        min={1000}
+                        max={500000}
+                        value={formData.amount}
+                        onChange={handleInputChange}
+                        className="text-input"
+                        placeholder="z.B. 25000"
+                      />
+                      <span className="input-suffix">€</span>
                     </div>
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="duration">
-                      Laufzeit
-                      <span className="label-value">{formData.duration} Monate ({(formData.duration / 12).toFixed(1)} Jahre)</span>
-                    </label>
-                    <input
-                      type="range"
-                      id="duration"
-                      name="duration"
-                      min={12}
-                      max={360}
-                      step="6"
-                      value={formData.duration}
-                      onChange={handleInputChange}
-                      className="range-input"
-                    />
-                    <div className="range-labels">
-                      <span>12 Monate</span>
-                      <span>360 Monate</span>
+                    <label htmlFor="duration">Laufzeit (Monate)</label>
+                    <div className="input-wrapper">
+                      <input
+                        type="number"
+                        id="duration"
+                        name="duration"
+                        min={1}
+                        value={formData.duration}
+                        onChange={handleInputChange}
+                        className="text-input"
+                        placeholder="z.B. 60"
+                      />
+                      <span className="input-suffix">Monate</span>
                     </div>
                   </div>
 
