@@ -925,3 +925,89 @@
   pointer-events: none;
 }
 
+
+/* ============================================
+   CONTACT CHOICE (étape 3 - WhatsApp ou Email)
+   ============================================ */
+
+.contact-choice-section {
+  max-width: 680px;
+  margin: 2rem auto 0;
+}
+
+.contact-choice-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0A1628;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.contact-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .contact-choice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact-choice-card {
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.contact-choice-card:hover {
+  border-color: #C9A84C;
+  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.15);
+}
+
+.contact-choice-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-choice-icon.whatsapp-icon {
+  background: #e8f5e9;
+  color: #25D366;
+}
+
+.contact-choice-icon.email-icon {
+  background: #e8eaf6;
+  color: #0A1628;
+}
+
+.contact-choice-card h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0A1628;
+  margin: 0;
+}
+
+.contact-choice-card p {
+  font-size: 0.875rem;
+  color: #57606a;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.contact-choice-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
