@@ -231,14 +231,9 @@ const LoanComparator = () => {
               <p>Antwort auf Ihre Anfrage innerhalb von 24 Stunden garantiert</p>
             </div>
             <div className="advantage-card">
-              <span className="advantage-icon">💰</span>
-              <h3>Kostenlos</h3>
-              <p>Unser Service ist für Sie völlig kostenfrei und unverbindlich</p>
-            </div>
-            <div className="advantage-card">
               <span className="advantage-icon">🎯</span>
               <h3>Transparent</h3>
-              <p>Klare Konditionen ohne versteckte Gebühren oder Provisionen</p>
+              <p>Klare Konditionen – 2,8% Festzins</p>
             </div>
           </div>
         </div>
@@ -248,7 +243,7 @@ const LoanComparator = () => {
       <section className="cta-section">
         <div className="container text-center">
           <h2>Bereit für Ihren Kredit?</h2>
-          <p>Starten Sie jetzt Ihren Kreditantrag – einfach, schnell und kostenlos</p>
+          <p>Starten Sie jetzt Ihren Kreditantrag – einfach und schnell</p>
           <button
             className="btn btn-primary btn-lg"
             onClick={goToSimulator}
