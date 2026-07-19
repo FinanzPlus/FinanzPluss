@@ -8,7 +8,7 @@ class WhatsAppService {
    * Numéro WhatsApp de FinanzPlus Austria
    * Format international: +43 (Autriche)
    */
-  static WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || '+43123456789';
+  static WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || '+4368110535900';
 
   /**
    * Générer un lien WhatsApp avec message pré-rempli

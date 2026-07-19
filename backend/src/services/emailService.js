@@ -118,7 +118,7 @@ const getClientConfirmationTemplate = (data) => {
             <strong style="color: #0A1628; display: inline-block; width: 120px;">🕐 Öffnungszeiten:</strong> Mo-Fr, 09:00-18:00 Uhr
           </div>
         </div>
-        <a href="https://wa.me/43123456789?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20meiner%20Kreditanfrage" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: 600; margin-top: 20px;">
+        <a href="https://wa.me/4368110535900?text=Hallo%2C%20ich%20habe%20eine%20Frage%20zu%20meiner%20Kreditanfrage" style="display: inline-block; background-color: #25D366; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: 600; margin-top: 20px;">
           💬 WhatsApp kontaktieren
         </a>
       </div>

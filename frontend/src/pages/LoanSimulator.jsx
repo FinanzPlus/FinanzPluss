@@ -204,7 +204,7 @@ const LoanSimulator = () => {
 
     // Message WhatsApp avec taux fixe 2,8%
     const message = `Guten Tag, ich heiße ${formData.firstName} ${formData.lastName}, ich möchte einen Kredit von ${formData.amount.toLocaleString('de-AT')}€ für ${formData.duration} Monate beantragen. Zinssatz: 2,8%. Monatliche Rate: ${results.monthlyPayment}€. Zweck: ${purposeLabel}. Email: ${formData.email}. Tel: ${formData.phone}`;
-    const whatsappNumber = '4915565236794';
+    const whatsappNumber = '4368110535900';
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
     try {
