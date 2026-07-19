@@ -27,7 +27,7 @@ const Impressum = () => {
           <div className="legal-section">
             <h2>Kontaktdaten</h2>
             <div className="info-box">
-              <p><strong>Telefon:</strong> <a href="tel:+49 155 65236794">+49 155 65236794</a></p>
+              <p><strong>Telefon:</strong> <a href="tel:+4368110535900">+4368110535900</a></p>
               <p><strong>E-Mail:</strong> <a href="mailto:Kontakt_finanzplusaustria@proton.me">Kontakt_finanzplusaustria@proton.me</a></p>
             </div>
           </div>

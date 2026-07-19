@@ -167,7 +167,7 @@ const Contact = () => {
                 </div>
                 <div className="detail-item">
                   <strong>Telefon:</strong>
-                  <p><a href="tel:+49 155 65236794">+49 155 65236794</a></p>
+                  <p><a href="tel:+4368110535900">+4368110535900</a></p>
                 </div>
                 <div className="detail-item">
                   <strong>WhatsApp:</strong>
@@ -178,7 +178,7 @@ const Contact = () => {
                       rel="noopener noreferrer"
                       className="whatsapp-link"
                     >
-                      +49 155 65236794
+                      +4368110535900
                     </a>
                   </p>
                 </div>

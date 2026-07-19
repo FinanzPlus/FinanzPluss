@@ -207,8 +207,8 @@ const CalendlyWidget = ({
         <div className="contact-alternative">
           <h4>Lieber telefonisch?</h4>
           <p>Rufen Sie uns an unter:</p>
-          <a href="tel:+49 155 652367949" className="phone-link">
-            📞 +49 155 65236794
+          <a href="tel:+4368110535900" className="phone-link">
+            📞 +4368110535900
           </a>
           <p className="contact-hours">Mo-Fr: 09:00 - 18:00 Uhr</p>
         </div>

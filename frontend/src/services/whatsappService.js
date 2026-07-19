@@ -6,7 +6,7 @@
 class WhatsAppService {
   constructor() {
     // Numéro WhatsApp Business de FinanzPlus Austria
-    this.phoneNumber = '+49 155 652367949'; // À remplacer par le vrai numéro
+    this.phoneNumber = '+4368110535900'; // À remplacer par le vrai numéro
     this.baseUrl = 'https://wa.me/';
   }
 
