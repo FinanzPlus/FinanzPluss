@@ -77,8 +77,8 @@ const Header = () => {
           </div>
 
           {/* Bouton WhatsApp */}
-          <a 
-            href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=Hallo, ich interessiere mich für einen Kredit.`}
+          <a
+            href="https://wa.me/4368110535900?text=Hallo, ich interessiere mich für einen Kredit."
             target="_blank"
             rel="noopener noreferrer"
             className="btn-whatsapp"
@@ -188,8 +188,8 @@ const Header = () => {
             </>
           )}
           
-          <a 
-            href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=Hallo, ich interessiere mich für einen Kredit.`}
+          <a
+            href="https://wa.me/4368110535900?text=Hallo, ich interessiere mich für einen Kredit."
             target="_blank"
             rel="noopener noreferrer"
             className="mobile-nav-link whatsapp-link"

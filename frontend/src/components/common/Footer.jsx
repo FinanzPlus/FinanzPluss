@@ -111,7 +111,7 @@ const Footer = () => {
                 <div className="contact-info">
                   <span className="contact-label">WhatsApp</span>
                   <a 
-                    href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}`}
+                    href="https://wa.me/4368110535900"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="contact-value whatsapp-link"

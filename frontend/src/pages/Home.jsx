@@ -411,7 +411,7 @@ const Home = () => {
                 🧮 Kreditantrag stellen
               </button>
               <a
-                href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}?text=Hallo, ich interessiere mich für einen Kredit.`}
+                href="https://wa.me/4368110535900?text=Hallo, ich interessiere mich für einen Kredit."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-whatsapp btn-lg"
