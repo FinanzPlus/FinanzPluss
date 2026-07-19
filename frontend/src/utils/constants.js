@@ -3,7 +3,7 @@ export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/ap
 export const API_TIMEOUT = import.meta.env.VITE_API_TIMEOUT || 30000;
 
 // WhatsApp
-export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '+447451267912';
+export const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || '+4368110535900';
 export const WHATSAPP_BASE_URL = 'https://wa.me';
 
 // Taux d'intérêt fixe FinanzPlus Austria
